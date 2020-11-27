@@ -15,8 +15,8 @@ class CreateSummerCampTitlesTable extends Migration
     {
         Schema::create('summer_camp_titles', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
             $table->string('name')->unique();
+            $table->timestamps();
         });
     }
 

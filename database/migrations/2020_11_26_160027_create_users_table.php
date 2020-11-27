@@ -21,13 +21,13 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
-            $table->timestamps();
-            $table->date('birth_date');
-            $table->string('address');
-            $table->string('phone');
-            $table->string('dni');
+            $table->date('birth_date')->nullable();
+            $table->string('address')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('dni')->nullable();
             $table->bigInteger('user_type_id')->unsigned();
             $table->foreign('user_type_id')->references('id')->on('user_types');
+            $table->timestamps();
 
         });
     }

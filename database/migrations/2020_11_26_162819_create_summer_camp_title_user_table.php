@@ -14,15 +14,14 @@ class CreateSummerCampTitleUserTable extends Migration
     public function up()
     {
         Schema::create('summer_camp_title_user', function (Blueprint $table) {
-            $table->timestamps();
             $table->bigInteger('summer_camp_title_id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('summer_camp_title_id')->references('id')->on('summer_camp_titles')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->primary(['summer_camp_title_id','user_id']);
-
-
+            $table->timestamps();
         });
+
     }
 
     /**

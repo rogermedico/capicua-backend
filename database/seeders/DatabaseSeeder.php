@@ -13,9 +13,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-      $this->call(
-        SummerCampTitleSeeder::class
-      );
+      $this->call([
+        SummercamptitleSeeder::class,
+        UserTypesSeeder::class,
+        UserSeeder::class,
+        SummerCampTitleUserSeeder::class
+
+      ]);
 
 
         // \App\Models\User::factory(10)->create();
