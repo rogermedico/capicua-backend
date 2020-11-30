@@ -32,7 +32,10 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
-        'pivot'
+        'pivot',
+        'email_verified_at',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -63,7 +66,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function summerCampTitles(){
-      return $this->belongsToMany('App\Models\SummerCampTitle')->withTimestamps();
+      return $this->belongsToMany('App\Models\SummerCampTitle')->withPivot('number')->withTimestamps();
     }
 
     public function userType(){

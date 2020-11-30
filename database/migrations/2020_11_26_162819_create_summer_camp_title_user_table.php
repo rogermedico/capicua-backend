@@ -19,6 +19,7 @@ class CreateSummerCampTitleUserTable extends Migration
             $table->foreign('summer_camp_title_id')->references('id')->on('summer_camp_titles')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->primary(['summer_camp_title_id','user_id']);
+            $table->string('number')->unique();
             $table->timestamps();
         });
 

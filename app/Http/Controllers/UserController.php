@@ -4,14 +4,36 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Http\Resources\UserResource;
+use App\Models\UserType;
 
 class UserController extends Controller
 {
 
-    public function __contstruct()
-    {
-      $this->middleware('auth:api');//->except(['index','show']);
+    // public function __contstruct()
+    // {
+    //   $this->middleware('auth:api');//->except(['index','show']);
+    // }
+
+    /* customize fields that are in another DB tables */
+    private function customizeFields($user){
+      /* user type */
+      $user->user_type = UserType::find($user->user_type_id)->only(['rank','name']);
+      unset($user->user_type_id);
+
+      /* summer camp titles */
+      $summerCampTitles = [];
+      $summerCampTitlesOriginal = $user->summerCampTitles;
+      unset($user->summerCampTitles);
+      foreach($summerCampTitlesOriginal as $summerCampTitle){
+        array_push($summerCampTitles, [
+          'name' => $summerCampTitle->name,
+          'number' => $summerCampTitle->pivot->number
+
+        ]);
+      };
+      $user->summer_camp_titles = $summerCampTitles;
+
+      return $user;
     }
 
     /**
@@ -21,7 +43,16 @@ class UserController extends Controller
      */
     public function index()
     {
-        return UserResource::collection(User::all());
+        /* get all users */
+        $users = User::all();
+
+        /* customize user fields */
+        $users->transform(function($user){
+          return $this->customizeFields($user);
+        });
+
+        return response()->json($users);
+
     }
 
     /**
@@ -56,13 +87,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    // public function show($id)
-    // {
-    //     return new UserResource(User::find($id));
-    // }
     public function show(User $user)
     {
-        return new UserResource($user);
+        return response()->json($this->customizeFields($user));
     }
 
     /**
@@ -74,7 +101,20 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+      if ($request->user()->user_type_id == 3) {
+
+        return response()->json(['error' => 'You cant update users.'], 403);
+
+      }
+
+
+
+      $user->update($request->only(['name','surname', 'email']));
+
+
+
+      return new UserResource($user);
     }
 
     /**
@@ -85,6 +125,10 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+      if($request->user()->id == 3){
+        return response()->json(['error' => 'You cant delete users.'], 403);
+      }
+        $user->delete();
+        return response()->json(null,204);
     }
 }

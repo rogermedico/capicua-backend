@@ -15,12 +15,22 @@ class SummerCampTitleUserSeeder extends Seeder
      */
     public function run()
     {
-      
-      User::all()->each(function ($user,$summerCampTitles){
-        $summerCampTitles = SummerCampTitle::all();
-        $user->summerCampTitles()->attach(
-            $summerCampTitles->random(rand(0,$summerCampTitles->count()))->pluck('id')->toArray()
-        );
+
+      $numbers = [];
+      User::all()->each(function ($user) use (&$numbers){
+        
+        $titles = SummerCampTitle::all()->random(rand(0,SummerCampTitle::all()->count()));
+        
+        for($i=0;$i<count($titles);$i++){
+          
+          //random unique number
+          $number = rand(10000,99999);
+          while(in_array($number,$numbers)) $number = rand(10000,99999);
+          array_push($numbers,$number);
+
+          $user->summerCampTitles()->attach($titles[$i],['number'=> $number]);
+        }
+
     });
     }
 }

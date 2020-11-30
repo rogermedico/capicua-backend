@@ -23,9 +23,15 @@ use App\Http\Controllers\UserController;
 
 
 // Route::apiResource('/users',UserController::class);
-Route::middleware('auth:api')->get('/users', [UserController::class, 'index']);
-Route::middleware('auth:api')->get('/users/{user}', [UserController::class, 'show']);
-Route::middleware('auth:api')->post('/users', [UserController::class, 'store']);
+// Route::middleware('auth:api')->get('/users', [UserController::class, 'index']);
+// Route::middleware('auth:api')->get('/users/{user}', [UserController::class, 'show']);
+// Route::middleware('auth:api')->post('/users', [UserController::class, 'store']);
+
+
+//just for test
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{user}', [UserController::class, 'show']);
+Route::post('/users', [UserController::class, 'store']);
 
 Route::group([
   'middleware' => 'api',

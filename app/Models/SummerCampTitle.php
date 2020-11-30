@@ -10,11 +10,13 @@ class SummerCampTitle extends Model
     use HasFactory;
 
     protected $hidden = [
-      'pivot'
+      'pivot',
+      'created_at',
+      'updated_at'
     ];
 
     public function users(){
-        return $this->belongsToMany('App\Model\User')->withTimestamps();
+        return $this->belongsToMany('App\Model\User')->withPivot('number')->withTimestamps();
     }
 
 }

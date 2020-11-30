@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\UserType;
 use Validator;
 
 class AuthController extends Controller
@@ -16,6 +17,28 @@ class AuthController extends Controller
      */
     public function __construct() {
       $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
+    /* customize fields that are in another DB tables */
+    private function customizeFields($user){
+      /* user type */
+      $user->user_type = UserType::find($user->user_type_id)->only(['rank','name']);
+      unset($user->user_type_id);
+
+      /* summer camp titles */
+      $summerCampTitles = [];
+      $summerCampTitlesOriginal = $user->summerCampTitles;
+      unset($user->summerCampTitles);
+      foreach($summerCampTitlesOriginal as $summerCampTitle){
+        array_push($summerCampTitles, [
+          'name' => $summerCampTitle->name,
+          'number' => $summerCampTitle->pivot->number
+
+        ]);
+      };
+      $user->summer_camp_titles = $summerCampTitles;
+
+      return $user;
     }
 
     /**
@@ -94,7 +117,8 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        return response()->json(auth()->user());
+      $user = auth()->user();
+        return response()->json($this->customizeFields($user));
     }
 
     /**
