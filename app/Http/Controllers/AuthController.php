@@ -71,8 +71,10 @@ class AuthController extends Controller
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
+            'surname' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|confirmed|min:8',
+            'user_type_id' => 'required|integer|exists:user_types,id'
         ]);
 
         if($validator->fails()){
@@ -117,8 +119,7 @@ class AuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-      $user = auth()->user();
-        return response()->json($this->customizeFields($user));
+        return response()->json($this->customizeFields(auth()->user()));
     }
 
     /**
@@ -130,10 +131,11 @@ class AuthController extends Controller
      */
     protected function createNewToken($token){
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+            'accessToken' => $token,
+            'tokenType' => 'bearer',
+            'expiresIn' => auth()->factory()->getTTL() * 60,
+            //'user' => $this->customizeFields(auth()->user())
+			'username' => auth()->user()->email
         ]);
     }
 }

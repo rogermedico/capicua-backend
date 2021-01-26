@@ -15,17 +15,35 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-      $user = [ 
+      $admin = [ 
         'name' => 'admin',
         'surname' => 'admin',
-        'email' => 'admin@admin.com',
+        'email' => 'admin@gmail.com',
         'password' => Hash::make('password'),
         'user_type_id' => 1
-
       ];
+	  
+	$moderator = [ 
+        'name' => 'moderator',
+        'surname' => 'moderator',
+        'email' => 'moderator@gmail.com',
+        'password' => Hash::make('password'),
+        'user_type_id' => 2
+      ];
+	  
+	$worker = [ 
+        'name' => 'worker',
+        'surname' => 'worker',
+        'email' => 'worker@gmail.com',
+        'password' => Hash::make('password'),
+        'user_type_id' => 3
+      ];
+	  
+	  
 
-      User::create($user);
-
+      User::create($admin);
+	  User::create($moderator);
+	  User::create($worker);
       User::factory()->times(50)->create();
 
     }
