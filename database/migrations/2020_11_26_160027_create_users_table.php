@@ -22,7 +22,12 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->date('birth_date')->nullable();
-            $table->string('address')->nullable();
+			$table->string('actual_position')->nullable();
+            $table->string('address_street')->nullable();
+			$table->string('address_number')->nullable();
+			$table->string('address_city')->nullable();
+			$table->string('address_cp')->nullable();
+			$table->string('address_country')->nullable();
             $table->string('phone')->nullable();
             $table->string('dni')->nullable();
             $table->bigInteger('user_type_id')->unsigned();

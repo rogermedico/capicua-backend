@@ -26,10 +26,18 @@ class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->firstName,
-            'surname' => $this->faker->lastName,
+            'surname' => $this->faker->lastName . " " . $this->faker->lastName,
             'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make('password'),//'$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'user_type_id' => $this->randomUserType()
+            'password' => Hash::make('password'),
+            'user_type_id' => $this->randomUserType(),
+			'birth_date' => $this->faker->date($format = 'Y-m-d', $max = '-18 years'),
+			'actual_position' => $this->faker->company,
+			'phone' => $this->faker->mobileNumber,
+			'dni' => $this->faker->dni,
+			'address_street' => $this->faker->streetName,
+			'address_number' => $this->faker->buildingNumber,
+			'address_city' => $this->faker->city,
+			'address_cp' => $this->faker->postcode
         ];
 
     }

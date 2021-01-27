@@ -16,7 +16,7 @@ class AuthController extends Controller
      * @return void
      */
     public function __construct() {
-      $this->middleware('auth:api', ['except' => ['login', 'register']]);
+      $this->middleware('auth:api', ['except' => ['login']]);
     }
 
     /* customize fields that are in another DB tables */
@@ -134,8 +134,8 @@ class AuthController extends Controller
             'accessToken' => $token,
             'tokenType' => 'bearer',
             'expiresIn' => auth()->factory()->getTTL() * 60,
-            //'user' => $this->customizeFields(auth()->user())
-			'username' => auth()->user()->email
+            'user' => $this->customizeFields(auth()->user())
+			//'username' => auth()->user()->email
         ]);
     }
 }
