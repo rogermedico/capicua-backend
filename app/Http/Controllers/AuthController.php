@@ -25,18 +25,18 @@ class AuthController extends Controller
       $user->user_type = UserType::find($user->user_type_id)->only(['rank','name']);
       unset($user->user_type_id);
 
-      /* summer camp titles */
-      $summerCampTitles = [];
-      $summerCampTitlesOriginal = $user->summerCampTitles;
-      unset($user->summerCampTitles);
-      foreach($summerCampTitlesOriginal as $summerCampTitle){
-        array_push($summerCampTitles, [
-          'name' => $summerCampTitle->name,
-          'number' => $summerCampTitle->pivot->number
-
-        ]);
+      /* courses */
+      $courses = [];
+      $coursesOriginal = $user->courses;
+      unset($user->courses);
+      foreach($coursesOriginal as $course){
+		$parsedCourse = ['name' => $course->name];
+		if($course->pivot->number) $parsedCourse['number'] = $course->pivot->number;
+		if($course->pivot->expedition_date) $parsedCourse['expedition_date'] = $course->pivot->expedition_date;
+		if($course->pivot->valid_until) $parsedCourse['valid_until'] = $course->pivot->valid_until;
+        array_push($courses, $parsedCourse);
       };
-      $user->summer_camp_titles = $summerCampTitles;
+      $user->courses = $courses;
 
       return $user;
     }

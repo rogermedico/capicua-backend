@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class SummerCampTitle extends Model
+class Course extends Model
 {
     use HasFactory;
 
@@ -16,7 +16,7 @@ class SummerCampTitle extends Model
     ];
 
     public function users(){
-        return $this->belongsToMany('App\Model\User')->withPivot('number')->withTimestamps();
+        return $this->belongsToMany('App\Model\User')->withPivot('number','expedition_date','valid_until')->withTimestamps();
     }
 
 }

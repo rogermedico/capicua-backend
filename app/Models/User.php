@@ -67,8 +67,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function summerCampTitles(){
-      return $this->belongsToMany('App\Models\SummerCampTitle')->withPivot('number')->withTimestamps();
+    public function courses(){
+      return $this->belongsToMany('App\Models\Course')->withPivot('number','expedition_date','valid_until')->withTimestamps();
     }
 
     public function userType(){

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSummerCampTitleUserTable extends Migration
+class CreateCourseUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,15 @@ class CreateSummerCampTitleUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('summer_camp_title_user', function (Blueprint $table) {
-            $table->bigInteger('summer_camp_title_id')->unsigned();
+        Schema::create('course_user', function (Blueprint $table) {
+            $table->bigInteger('course_id')->unsigned();
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('summer_camp_title_id')->references('id')->on('summer_camp_titles')->onDelete('cascade');
+            $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->primary(['summer_camp_title_id','user_id']);
-            $table->string('number')->unique();
+            $table->primary(['course_id','user_id']);
+            $table->string('number')->nullable();
+			$table->date('expedition_date')->nullable();
+			$table->date('valid_until')->nullable(); 
             $table->timestamps();
         });
 
@@ -32,6 +34,6 @@ class CreateSummerCampTitleUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('summer_camp_title_user');
+        Schema::dropIfExists('course_user');
     }
 }
