@@ -25,19 +25,19 @@ class UserFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->firstName,
-            'surname' => $this->faker->lastName . " " . $this->faker->lastName,
-            'email' => $this->faker->unique()->safeEmail,
-            'password' => Hash::make('password'),
-            'user_type_id' => $this->randomUserType(),
-			'birth_date' => $this->faker->date($format = 'Y-m-d', $max = '-18 years'),
-			'actual_position' => $this->faker->company,
-			'phone' => $this->faker->mobileNumber,
-			'dni' => $this->faker->dni,
-			'address_street' => $this->faker->streetName,
-			'address_number' => $this->faker->buildingNumber,
-			'address_city' => $this->faker->city,
-			'address_cp' => $this->faker->postcode
+          'name' => $this->faker->firstName,
+          'surname' => $this->faker->lastName . " " . $this->faker->lastName,
+          'email' => $this->faker->unique()->safeEmail,
+          'password' => Hash::make('password'),
+          'user_type_id' => $this->randomUserType(),
+          'birth_date' => $this->faker->date($format = 'Y-m-d', $max = '-18 years'),
+          'actual_position' => $this->faker->company,
+          'phone' => $this->faker->mobileNumber,
+          'dni' => $this->faker->dni,
+          'address_street' => $this->faker->streetName,
+          'address_number' => $this->faker->buildingNumber,
+          'address_city' => $this->faker->city,
+          'address_cp' => $this->faker->postcode
         ];
 
     }

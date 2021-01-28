@@ -74,4 +74,8 @@ class User extends Authenticatable implements JWTSubject
     public function userType(){
       return $this->hasOne('App\Models\UserType');
     }
+
+    public function driverLicences(){
+      return $this->hasMany('App\Models\DriverLicence');
+    }
 }

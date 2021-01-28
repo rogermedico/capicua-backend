@@ -17,17 +17,17 @@ class UserSeeder extends Seeder
     {
 
       User::factory()->create([
-		'email' => 'admin@gmail.com',
-		'user_type_id' => 1
-	  ]);
-	  User::factory()->create([
-		'email' => 'moderator@gmail.com',
-		'user_type_id' => 2
-	  ]);
-	  User::factory()->create([
-		'email' => 'worker@gmail.com',
-		'user_type_id' => 3
-	  ]);
+        'email' => 'admin@gmail.com',
+        'user_type_id' => 1
+      ]);
+      User::factory()->create([
+        'email' => 'moderator@gmail.com',
+        'user_type_id' => 2
+      ]);
+      User::factory()->create([
+        'email' => 'worker@gmail.com',
+        'user_type_id' => 3
+      ]);
       User::factory()->times(50)->create();
 
     }

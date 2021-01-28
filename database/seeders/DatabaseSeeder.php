@@ -17,8 +17,8 @@ class DatabaseSeeder extends Seeder
         CourseSeeder::class,
         UserTypesSeeder::class,
         UserSeeder::class,
-        CourseUserSeeder::class
-
+        CourseUserSeeder::class,
+        DriverLicenceSeeder::class
       ]);
 
 

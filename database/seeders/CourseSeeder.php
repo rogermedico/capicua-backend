@@ -17,7 +17,7 @@ class CourseSeeder extends Seeder
       $coursesNames = [
         ['name' => 'Monitor de lleure'],
         ['name' => 'Director de lleure'],
-		['name' => 'Manipulació d\'aliments']
+		    ['name' => 'Manipulació d\'aliments']
       ];
 
       foreach($coursesNames as $coursesName){

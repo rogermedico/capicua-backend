@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\models\DriverLicence;
 use App\Models\UserType;
 use Validator;
 
@@ -26,17 +27,30 @@ class AuthController extends Controller
       unset($user->user_type_id);
 
       /* courses */
-      $courses = [];
       $coursesOriginal = $user->courses;
       unset($user->courses);
-      foreach($coursesOriginal as $course){
-		$parsedCourse = ['name' => $course->name];
-		if($course->pivot->number) $parsedCourse['number'] = $course->pivot->number;
-		if($course->pivot->expedition_date) $parsedCourse['expedition_date'] = $course->pivot->expedition_date;
-		if($course->pivot->valid_until) $parsedCourse['valid_until'] = $course->pivot->valid_until;
-        array_push($courses, $parsedCourse);
-      };
-      $user->courses = $courses;
+      if($coursesOriginal->isNotEmpty()){
+        $courses = [];
+        foreach($coursesOriginal as $course){
+          $parsedCourse = ['name' => $course->name];
+          if($course->pivot->number) $parsedCourse['number'] = $course->pivot->number;
+          if($course->pivot->expedition_date) $parsedCourse['expedition_date'] = $course->pivot->expedition_date;
+          if($course->pivot->valid_until) $parsedCourse['valid_until'] = $course->pivot->valid_until;
+          array_push($courses, $parsedCourse);
+        };
+        $user->courses = $courses;
+      }
+
+      /* driver licences */
+      $drivingLicences = DriverLicence::where('user_id',$user->id)->get();
+      if($drivingLicences->isNotEmpty()){
+        $drivingLicences = $drivingLicences->sortBy('type')->flatten();
+        $user->driving_licences = array_map(function($drivingLicence){
+            return array_filter( $drivingLicence, function ($val) {
+              return !is_null($val);
+            });
+        },$drivingLicences->toArray());
+      }
 
       return $user;
     }
