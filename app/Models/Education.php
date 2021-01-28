@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DriverLicence extends Model
+class Education extends Model
 {
     use HasFactory;
+
+    public $table = 'educations';
 
     /**
      * The attributes that are mass assignable.
@@ -15,10 +17,10 @@ class DriverLicence extends Model
      * @var array
      */
     protected $fillable = [
-      'type',
-      'expedition_date',
-      'valid_until',
-  ];
+      'name',
+      'finish_date',
+      'finished'
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -27,7 +29,6 @@ class DriverLicence extends Model
      */
     protected $hidden = [
       'id',
-      'user_id',
       'created_at',
       'updated_at'
   ];

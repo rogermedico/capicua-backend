@@ -20,6 +20,7 @@ class CreateDriverLicencesTable extends Migration
       $table->string('type');
       $table->date('expedition_date')->nullable();
       $table->date('valid_until')->nullable();
+      $table->unique(['user_id','type']);
       $table->timestamps();
     });
   }

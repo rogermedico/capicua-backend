@@ -78,4 +78,8 @@ class User extends Authenticatable implements JWTSubject
     public function driverLicences(){
       return $this->hasMany('App\Models\DriverLicence');
     }
+
+    public function educations(){
+      return $this->hasMany('App\Models\Education');
+    }
 }

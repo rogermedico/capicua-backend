@@ -17,7 +17,7 @@ class DriverLicenceSeeder extends Seeder
     public function run()
     {
 
-      User::all()->each(function ($user) use (&$driverLicences){
+      User::all()->each(function ($user) /*use (&$driverLicences)*/{
 
         if((bool) random_int(0, 1)){
           $driverLicence = DriverLicence::create([

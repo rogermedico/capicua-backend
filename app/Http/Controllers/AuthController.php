@@ -29,28 +29,20 @@ class AuthController extends Controller
       /* courses */
       $coursesOriginal = $user->courses;
       unset($user->courses);
-      if($coursesOriginal->isNotEmpty()){
         $courses = [];
         foreach($coursesOriginal as $course){
-          $parsedCourse = ['name' => $course->name];
-          if($course->pivot->number) $parsedCourse['number'] = $course->pivot->number;
-          if($course->pivot->expedition_date) $parsedCourse['expedition_date'] = $course->pivot->expedition_date;
-          if($course->pivot->valid_until) $parsedCourse['valid_until'] = $course->pivot->valid_until;
+          $parsedCourse = [
+            'name' => $course->name,
+            'number' => $course->pivot->number,
+            'expedition_date' => $course->pivot->expedition_date,
+            'valid_until' => $course->pivot->valid_until
+          ];
           array_push($courses, $parsedCourse);
         };
         $user->courses = $courses;
-      }
 
       /* driver licences */
-      $drivingLicences = DriverLicence::where('user_id',$user->id)->get();
-      if($drivingLicences->isNotEmpty()){
-        $drivingLicences = $drivingLicences->sortBy('type')->flatten();
-        $user->driving_licences = array_map(function($drivingLicence){
-            return array_filter( $drivingLicence, function ($val) {
-              return !is_null($val);
-            });
-        },$drivingLicences->toArray());
-      }
+      $user->driving_licences = DriverLicence::where('user_id',$user->id)->get();
 
       return $user;
     }
