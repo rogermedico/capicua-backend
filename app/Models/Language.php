@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Education extends Model
+class Language extends Model
 {
     use HasFactory;
 
-    public $table = 'educations';
+    public $table = 'languages';
 
     /**
      * The attributes that are mass assignable.
@@ -18,8 +18,8 @@ class Education extends Model
      */
     protected $fillable = [
       'name',
-      'finish_date',
-      'finished'
+      'level',
+      'finish_date'
     ];
 
     /**

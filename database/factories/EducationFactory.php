@@ -25,7 +25,6 @@ class EducationFactory extends Factory
     {
       $randFinishDateFinished = $this->randFinishDateFinished();
         return [
-          'user_id' => 2,
           'name' => $this->faker->sentence(3),
           'finish_date' => $randFinishDateFinished->finish_date,
           'finished' => $randFinishDateFinished->finished

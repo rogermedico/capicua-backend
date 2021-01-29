@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\models\DriverLicence;
 use App\Models\UserType;
+use App\Models\Education;
+use App\Models\Language;
 use Validator;
 
 class AuthController extends Controller
@@ -44,6 +46,12 @@ class AuthController extends Controller
       /* driver licences */
       $user->driving_licences = DriverLicence::where('user_id',$user->id)->get();
 
+      /* educations */
+      $user->educations = Education::where('user_id',$user->id)->get();
+
+      /* languages */
+      $user->languages = Language::where('user_id',$user->id)->get();
+      
       return $user;
     }
 
