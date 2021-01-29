@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Auth\Events\Verified; 
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -24,19 +26,8 @@ class AuthController extends Controller
       $this->middleware('auth:api', ['except' => ['login','verifyEmail']]);
     }
 
-    private function mail(){
-        
-      Mail::to('pop135@gmail.com')->send(new VerifyEmail() );
-
-    }
-
     /* customize fields that are in another DB tables */
     private function customizeFields($user){
-
-      $this->mail();
-
-
-
 
       /* user type */
       $user->user_type = UserType::find($user->user_type_id)->only(['rank','name']);
@@ -166,8 +157,24 @@ class AuthController extends Controller
         ]);
     }
 
-    public function verifyEmail(){
+    public function sendVerifyEmail(Request $request){
+      // Mail::to(auth()->user()->email)->send(new VerifyEmail() );
+      auth()->user()->sendEmailVerificationNotification();
+      return response()->json(['message' => 'Verification email sent.']);
+    }
 
+    public function verifyEmail(Request $request){
+      $user = User::find($request->route('id'));
+
+    if (!hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+        throw new AuthorizationException;
+    }
+
+    if ($user->markEmailAsVerified())
+        event(new Verified($user));
+
+    // return redirect($this->redirectPath())->with('verified', true);
+      return response()->json(['message' => 'Email verification success.']);
     }
 
 }

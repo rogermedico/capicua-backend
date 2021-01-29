@@ -33,16 +33,29 @@ use App\Http\Controllers\UserController;
 // Route::get('/users/{user}', [UserController::class, 'show']);
 // Route::post('/users', [UserController::class, 'store']);
 
-Route::group([
-  'middleware' => 'api',
-  'prefix' => 'auth'
+// Route::group([
+//   'middleware' => 'api',
+//   'prefix' => 'auth'
 
-], function ($router) {
-  Route::post('/login', [AuthController::class, 'login']);
-  Route::post('/register', [AuthController::class, 'register']);
-  Route::post('/logout', [AuthController::class, 'logout']);
-  Route::post('/refresh', [AuthController::class, 'refresh']);
-  Route::get('/profile', [AuthController::class, 'userProfile']);    
-  Route::get('/email/verification', [AuthController::class, 'emailVerification']);  
-  Route::get('/email/resend', [AuthController::class, 'emailResend']);      
-});
+// ], function ($router) {
+//   Route::post('/login', [AuthController::class, 'login']);
+//   Route::post('/register', [AuthController::class, 'register']);
+//   Route::post('/logout', [AuthController::class, 'logout']);
+//   Route::post('/refresh', [AuthController::class, 'refresh']);
+//   Route::get('/profile', [AuthController::class, 'userProfile']);    
+//   Route::get('/email/verify', [AuthController::class, 'sendVerifyEmail'])->name('verification.notice');  
+//   Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');      
+// });
+
+
+  Route::prefix('auth')->middleware('api')->group( function () {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/profile', [AuthController::class, 'userProfile']);    
+      
+         
+  });
+  Route::get('/auth/email/verify', [AuthController::class, 'sendVerifyEmail'])->middleware('auth')->name('verification.notice');
+  Route::get('/auth/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify'); 
