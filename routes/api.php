@@ -29,9 +29,9 @@ use App\Http\Controllers\UserController;
 
 
 //just for test
-Route::get('/users', [UserController::class, 'index']);
-Route::get('/users/{user}', [UserController::class, 'show']);
-Route::post('/users', [UserController::class, 'store']);
+// Route::get('/users', [UserController::class, 'index']);
+// Route::get('/users/{user}', [UserController::class, 'show']);
+// Route::post('/users', [UserController::class, 'store']);
 
 Route::group([
   'middleware' => 'api',
@@ -43,17 +43,6 @@ Route::group([
   Route::post('/logout', [AuthController::class, 'logout']);
   Route::post('/refresh', [AuthController::class, 'refresh']);
   Route::get('/profile', [AuthController::class, 'userProfile']);    
+  Route::get('/email/verification', [AuthController::class, 'emailVerification']);  
+  Route::get('/email/resend', [AuthController::class, 'emailResend']);      
 });
-
-
-// Route::group([
-//   'middleware' => 'api',
-//   'prefix' => 'auth'
-
-// ], function ($router) {
-//   Route::post('/login', [AuthController::class, 'login']);
-//   Route::post('/register', [AuthController::class, 'register']);
-//   Route::post('/logout', [AuthController::class, 'logout']);
-//   Route::post('/refresh', [AuthController::class, 'refresh']);
-//   Route::get('/user-profile', [AuthController::class, 'userProfile']);    
-// });

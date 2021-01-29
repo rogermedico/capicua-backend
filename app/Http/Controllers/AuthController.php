@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use App\models\DriverLicence;
 use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
+use App\Mail\VerifyEmail;
 use Validator;
 
 class AuthController extends Controller
@@ -19,11 +21,23 @@ class AuthController extends Controller
      * @return void
      */
     public function __construct() {
-      $this->middleware('auth:api', ['except' => ['login']]);
+      $this->middleware('auth:api', ['except' => ['login','verifyEmail']]);
+    }
+
+    private function mail(){
+        
+      Mail::to('pop135@gmail.com')->send(new VerifyEmail() );
+
     }
 
     /* customize fields that are in another DB tables */
     private function customizeFields($user){
+
+      $this->mail();
+
+
+
+
       /* user type */
       $user->user_type = UserType::find($user->user_type_id)->only(['rank','name']);
       unset($user->user_type_id);
@@ -149,7 +163,11 @@ class AuthController extends Controller
             'tokenType' => 'bearer',
             'expiresIn' => auth()->factory()->getTTL() * 60,
             'user' => $this->customizeFields(auth()->user())
-			//'username' => auth()->user()->email
         ]);
     }
+
+    public function verifyEmail(){
+
+    }
+
 }
