@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\CustomVerifyEmailNotification;
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -64,6 +65,10 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
      */
     public function getJWTCustomClaims() {
         return [];
+    }
+
+    public function sendEmailVerificationNotification(){
+      $this->notify(new CustomVerifyEmailNotification);
     }
 
     public function courses(){
