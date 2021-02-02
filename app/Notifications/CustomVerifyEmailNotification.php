@@ -63,7 +63,8 @@ class CustomVerifyEmailNotification extends Notification
     {
         return (new MailMessage)
             ->subject(Lang::get('Verify Email Address'))
-            ->line(Lang::get('Please click the button below to verify your email address.'))
+            ->line('Se us ha afegit com a usuari de la intranet corporativa. Si us plau, feu clic al botó inferior per verificar la vostra adreça electrònica')
+            // ->line(Lang::get('Please click the button below to verify your email address.'))
             ->action(Lang::get('Verify Email Address'), $url)
             ->line(Lang::get('If you did not create an account, no further action is required.'));
     }

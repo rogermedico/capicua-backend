@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Auth\Events\Verified; 
+use Illuminate\Auth\Events\PasswordReset; 
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\models\DriverLicence;
 use App\Models\UserType;
@@ -158,7 +161,6 @@ class AuthController extends Controller
     }
 
     public function sendVerifyEmail(Request $request){
-      // Mail::to(auth()->user()->email)->send(new VerifyEmail() );
       auth()->user()->sendEmailVerificationNotification();
       return response()->json(['message' => 'Verification email sent.']);
     }
@@ -173,8 +175,59 @@ class AuthController extends Controller
     if ($user->markEmailAsVerified())
         event(new Verified($user));
 
-    // return redirect($this->redirectPath())->with('verified', true);
-      return response()->json(['message' => 'Email verification success.']);
+      return view('EmailVerificationSuccess',[
+        'email'=> $user->email,
+        'frontendUrl' => env('FRONTEND_URL')
+        ]);
     }
+
+    public function sendForgotPasswordEmail(Request $request){
+      $request->validate(['email' => 'required|email']);
+
+      $status = Password::sendResetLink(
+          $request->only('email')
+      );
+
+      if($status === Password::RESET_LINK_SENT){
+        return response()->json(['message' => 'Reset password email sent.']);
+      }
+      else{
+        return response()->json(['message' => 'ERROR: Reset password email not sent.']);
+      }
+    }
+
+    public function forgotPasswordForm($token){
+      return view('ForgotPasswordForm',['token' => $token]);
+    }
+
+    public function passwordReset(Request $request){
+      $asdf = $request->validate([
+        'token' => 'required',
+        'email' => 'required|email',
+        'password' => 'required|min:8|confirmed',
+      ]);
+
+      var_dump($asdf);
+
+    $status = Password::reset(
+        $request->only('email', 'password', 'password_confirmation', 'token'),
+        function ($user, $password) use ($request) {
+            $user->forceFill([
+                'password' =>bcrypt($password)
+            ])->save();
+
+            $user->setRememberToken(Str::random(60));
+
+            event(new PasswordReset($user));
+        }
+    );
+
+    if($status === Password::PASSWORD_RESET){
+      return response()->json(['message' => 'Password updated.']);
+    }
+    else{
+      return response()->json(['message' => 'ERROR: Password not updated.']);
+    }
+  }
 
 }
