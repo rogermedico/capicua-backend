@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VerifyEmailController;
+use App\Http\Controllers\ForgotPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,14 +49,20 @@ use App\Http\Controllers\UserController;
 //   Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');      
 // });
 
+/* auth */
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('auth');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::post('/auth/refresh', [AuthController::class, 'refresh'])->middleware('auth');
-Route::get('/auth/profile', [AuthController::class, 'userProfile'])->middleware('auth');
 
-Route::get('/auth/email/verify', [AuthController::class, 'sendVerifyEmail'])->middleware('auth')->name('verification.notice');
-Route::get('/auth/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify'); 
+/* user */
+Route::get('/user', [UserController::class, 'user'])->middleware('auth');
+Route::get('/users', [UserController::class, 'users'])->middleware('auth');
 
-Route::post('/auth/password/forgot', [AuthController::class, 'sendForgotPasswordEmail'])->middleware('guest')->name('password.request');
-Route::post('/auth/password/reset', [AuthController::class, 'passwordReset'])->middleware('guest')->name('password.update');
+/* verify email */
+Route::get('/email/verify', [VerifyEmailController::class, 'sendVerifyEmail'])->middleware('auth')->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verifyEmail'])->middleware('guest')->name('verification.verify'); 
+
+/* forgot password */
+Route::post('/password/forgot', [ForgotPasswordController::class, 'sendForgotPasswordEmail'])->middleware('guest')->name('password.request');
+Route::post('/password/reset', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.update');

@@ -67,9 +67,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return [];
     }
 
-    public function sendEmailVerificationNotification(){
-      $this->notify(new CustomVerifyEmailNotification);
-    }
+    // public function sendEmailVerificationNotification(){
+    //   $this->notify(new CustomVerifyEmailNotification);
+    // }
 
     public function courses(){
       return $this->belongsToMany('App\Models\Course')->withPivot('number','expedition_date','valid_until')->withTimestamps();

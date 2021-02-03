@@ -4,131 +4,145 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\models\DriverLicence;
 use App\Models\UserType;
+use App\Models\Education;
+use App\Models\Language;
 
 class UserController extends Controller
 {
 
-    // public function __contstruct()
-    // {
-    //   $this->middleware('auth:api');//->except(['index','show']);
-    // }
+  // public function __contstruct()
+  // {
+  //   $this->middleware('auth:api');//->except(['index','show']);
+  // }
 
-    /* customize fields that are in another DB tables */
-    private function customizeFields($user){
-      /* user type */
-      $user->user_type = UserType::find($user->user_type_id)->only(['rank','name']);
-      unset($user->user_type_id);
+  /* customize fields that are in another DB tables */
+  private function customizeFields($user)
+  {
 
-      /* summer camp titles */
-      $summerCampTitles = [];
-      $summerCampTitlesOriginal = $user->summerCampTitles;
-      unset($user->summerCampTitles);
-      foreach($summerCampTitlesOriginal as $summerCampTitle){
-        array_push($summerCampTitles, [
-          'name' => $summerCampTitle->name,
-          'number' => $summerCampTitle->pivot->number
+    /* user type */
+    $user->user_type = UserType::find($user->user_type_id)->only(['rank', 'name']);
+    unset($user->user_type_id);
 
-        ]);
-      };
-      $user->summer_camp_titles = $summerCampTitles;
+    /* courses */
+    $user->courses->transform(function ($course) {
+      return [
+        'name' => $course->name,
+        'number' => $course->pivot->number,
+        'expedition_date' => $course->pivot->expedition_date,
+        'valid_until' => $course->pivot->valid_until
+      ];
+    });
 
-      return $user;
-    }
+    /* driver licences */
+    $user->driving_licences = DriverLicence::where('user_id', $user->id)->get();
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        /* get all users */
-        $users = User::all();
+    /* educations */
+    $user->educations = Education::where('user_id', $user->id)->get();
 
-        /* customize user fields */
-        $users->transform(function($user){
-          return $this->customizeFields($user);
-        });
+    /* languages */
+    $user->languages = Language::where('user_id', $user->id)->get();
 
-        return response()->json($users);
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-      $this->validate($request, [
-        'name' => 'required',
-        'surname' => 'required',
-        'email' => 'required',
-        'password' => 'required',
-        'user_type_id' => 'required',
-      ]);
-      $user = new User;
-      $user->name = $request->name;
-      $user->surname = $request->surname;
-      $user->email = $request->email;
-      $user->password = Hash::make($request->password);
-      $user->user_type_id = $request->user_type_id;
-      $user->save();
-
-      return new UserResource($user);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(User $user)
-    {
-        return response()->json($this->customizeFields($user));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-
-      if ($request->user()->user_type_id == 3) {
-
-        return response()->json(['error' => 'You cant update users.'], 403);
-
-      }
+    return $user;
+  }
 
 
 
-      $user->update($request->only(['name','surname', 'email']));
+  /**
+   * Display the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function user()
+  {
+    return response()->json($this->customizeFields(auth()->user()));
+  }
+
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function users()
+  {
+    /* get all users */
+    $users = User::all();
+
+    /* customize user fields */
+    $users->transform(function ($user) {
+      return $this->customizeFields($user);
+    });
+
+    return response()->json($users);
+  }
+
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  // public function update(Request $request, $id)
+  // {
+
+  //   if ($request->user()->user_type_id == 3) {
+
+  //     return response()->json(['error' => 'You cant update users.'], 403);
+  //   }
 
 
 
-      return new UserResource($user);
-    }
+  //   $user->update($request->only(['name', 'surname', 'email']));
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-      if($request->user()->id == 3){
-        return response()->json(['error' => 'You cant delete users.'], 403);
-      }
-        $user->delete();
-        return response()->json(null,204);
-    }
+
+  //   return new UserResource($user);
+  // }
+
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  // public function destroy($id)
+  // {
+  //   if ($request->user()->id == 3) {
+  //     return response()->json(['error' => 'You cant delete users.'], 403);
+  //   }
+  //   $user->delete();
+  //   return response()->json(null, 204);
+  // }
+
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param  \Illuminate\Http\Request  $request
+   * @return \Illuminate\Http\Response
+   */
+  // public function store(Request $request)
+  // {
+  //   $this->validate($request, [
+  //     'name' => 'required',
+  //     'surname' => 'required',
+  //     'email' => 'required',
+  //     'password' => 'required',
+  //     'user_type_id' => 'required',
+  //   ]);
+  //   $user = new User;
+  //   $user->name = $request->name;
+  //   $user->surname = $request->surname;
+  //   $user->email = $request->email;
+  //   $user->password = Hash::make($request->password);
+  //   $user->user_type_id = $request->user_type_id;
+  //   $user->save();
+
+  //   return new UserResource($user);
+  // }
+
+
+
+
 }
