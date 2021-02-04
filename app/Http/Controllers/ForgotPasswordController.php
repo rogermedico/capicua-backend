@@ -26,7 +26,7 @@ class ForgotPasswordController extends Controller
   }
 
   public function passwordReset(Request $request){
-    $asdf = $request->validate([
+    $request->validate([
       'token' => 'required',
       'email' => 'required|email',
       'password' => 'required|min:8|confirmed',

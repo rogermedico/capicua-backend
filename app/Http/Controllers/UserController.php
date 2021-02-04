@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\models\DriverLicence;
 use App\Models\UserType;
@@ -78,6 +79,29 @@ class UserController extends Controller
     return response()->json($users);
   }
 
+    /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function changePassword(Request $request)
+  {
+
+    $asdf = $request->validate([
+      'old_password' => 'required|min:8',
+      'password' => 'required|min:8|confirmed|different:old_password',
+    ]);
+
+    if (!(Hash::check($request->get('old_password'), auth()->user()->password))) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    auth()->user()->password = bcrypt($request->get('password'));
+    auth()->user()->save();
+
+    return response()->json(['message' => 'Password updated.']);
+  }
+
   /**
    * Update the specified resource in storage.
    *
@@ -85,7 +109,7 @@ class UserController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  // public function update(Request $request, $id)
+  // public function update(Request $request)
   // {
 
   //   if ($request->user()->user_type_id == 3) {
