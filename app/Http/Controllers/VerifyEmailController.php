@@ -22,14 +22,14 @@ class VerifyEmailController extends Controller
         throw new AuthorizationException;
     }
 
-    if ($user->hasVerifiedEmail()) return response()->json(['message' => 'Email already verified.']);
+    if ($user->hasVerifiedEmail()) return response()->json(['message' => 'Email already verified.'],400);
 
     if ($user->markEmailAsVerified()){
       event(new Verified($user));
       return response()->json(['message' => 'Email successfully verified.']);
     }
     else{
-      return response()->json(['message' => 'ERROR: Email not verified.']);
+      return response()->json(['message' => 'Email not verified.'],400);
     }
   }
 

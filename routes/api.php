@@ -59,6 +59,7 @@ Route::post('/auth/refresh', [AuthController::class, 'refresh'])->middleware('au
 Route::get('/user', [UserController::class, 'user'])->middleware('auth');
 Route::get('/users', [UserController::class, 'users'])->middleware('auth');
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
+Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
 
 /* verify email */
 Route::get('/email/verify', [VerifyEmailController::class, 'sendVerifyEmail'])->middleware('auth')->name('verification.notice');

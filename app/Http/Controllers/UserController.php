@@ -79,7 +79,28 @@ class UserController extends Controller
     return response()->json($users);
   }
 
-    /**
+/**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function checkPassword(Request $request)
+  {
+
+    $request->validate([
+      'password' => 'required|min:8|string',
+    ]);
+
+    if ((Hash::check($request->get('password'), auth()->user()->password))) {
+      return response()->json(['password_equality' => true]);
+    }
+    else{
+      return response()->json(['password_equality' => false]);
+    }
+
+  }
+
+  /**
    * Display a listing of the resource.
    *
    * @return \Illuminate\Http\Response
@@ -87,7 +108,7 @@ class UserController extends Controller
   public function changePassword(Request $request)
   {
 
-    $asdf = $request->validate([
+    $request->validate([
       'old_password' => 'required|min:8',
       'password' => 'required|min:8|confirmed|different:old_password',
     ]);

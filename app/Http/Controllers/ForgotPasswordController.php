@@ -21,7 +21,7 @@ class ForgotPasswordController extends Controller
       return response()->json(['message' => 'Reset password email sent.']);
     }
     else{
-      return response()->json(['message' => 'ERROR: Reset password email not sent.']);
+      return response()->json(['message' => 'Reset password email not sent.'],400);
     }
   }
 
@@ -50,7 +50,7 @@ class ForgotPasswordController extends Controller
       return response()->json(['message' => 'Password updated.']);
     }
     else{
-      return response()->json(['message' => 'ERROR: Password not updated.']);
+      return response()->json(['message' => 'Password not updated.'],400);
     }
   }
 }
