@@ -123,28 +123,58 @@ class UserController extends Controller
     return response()->json(['message' => 'Password updated.']);
   }
 
-  /**
+
+
+/**
    * Update the specified resource in storage.
    *
    * @param  \Illuminate\Http\Request  $request
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  // public function update(Request $request)
-  // {
+  public function update(Request $request, $id)
+  {
 
-  //   if ($request->user()->user_type_id == 3) {
+    $request->validate([
+      'name' => 'string|between:2,100',
+      'surname' => 'string|between:2,100',
+      'email' => 'string|email|max:100|unique:users',
+      'user_type_id' => 'integer|exists:user_types,id',
+      'dni' => 'string',
+      'birth_date' => 'date',
+      'actual_position' => 'string',
+      'address_street' => 'string',
+      'address_number' => 'string',
+      'address_city' => 'string',
+      'address_cp' => 'string',
+      'address_country' => 'string',
+      'phone' => 'string',
+    ]);
 
-  //     return response()->json(['error' => 'You cant update users.'], 403);
-  //   }
+    $user = User::find($id);
+    $original_email = $user->email;
+    $original_user_type_id = $user->user_type_id;
+    $author_rank = UserType::find(auth()->user()->user_type_id)->only('rank')['rank'];
+    $updated_user_rank = UserType::find($user->user_type_id)->only('rank')['rank'];
+    
+    var_dump($author_rank);
+    var_dump($updated_user_rank);
 
+    if ($author_rank < $updated_user_rank || $author_rank == 1) {
+      $user->fill($request->all());
+      if(auth()->user()->user_type_id >= $request->get('user_type_id') ) {
+        $user->user_type_id = $original_user_type_id;
+      }
+        
+      $user->save();
+      if($original_email != $user->email) $user->sendEmailVerificationNotification();
+      return response()->json(['message' => 'User updated.']);
+    }
+    else{
+      return response()->json(['message' => 'User not updated'],422);
+    }
 
-
-  //   $user->update($request->only(['name', 'surname', 'email']));
-
-
-  //   return new UserResource($user);
-  // }
+  }
 
   /**
    * Remove the specified resource from storage.

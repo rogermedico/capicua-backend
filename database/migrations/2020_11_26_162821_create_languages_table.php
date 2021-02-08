@@ -20,6 +20,7 @@ class CreateLanguagesTable extends Migration
           $table->string('name');
           $table->string('level');
           $table->date('finish_date')->nullable();
+          $table->unique(['user_id','name']);
           $table->timestamps();
         });
 
