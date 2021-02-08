@@ -9,6 +9,7 @@ use App\models\DriverLicence;
 use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
+use Validator;
 
 class UserController extends Controller
 {
@@ -134,6 +135,7 @@ class UserController extends Controller
    */
   public function update(Request $request, $id)
   {
+    var_dump($id);
 
     $request->validate([
       'name' => 'string|between:2,100',
@@ -156,9 +158,7 @@ class UserController extends Controller
     $original_user_type_id = $user->user_type_id;
     $author_rank = UserType::find(auth()->user()->user_type_id)->only('rank')['rank'];
     $updated_user_rank = UserType::find($user->user_type_id)->only('rank')['rank'];
-    
-    var_dump($author_rank);
-    var_dump($updated_user_rank);
+  
 
     if ($author_rank < $updated_user_rank || $author_rank == 1) {
       $user->fill($request->all());
@@ -175,6 +175,51 @@ class UserController extends Controller
     }
 
   }
+
+  /**
+   * Register a User.
+   *
+   * @return \Illuminate\Http\JsonResponse
+   */
+  public function create(Request $request) {
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|string|between:2,100',
+        'surname' => 'required|string|between:2,100',
+        'email' => 'required|string|email|max:100|unique:users',
+        'password' => 'required|string|min:8',
+        'user_type_id' => 'required|integer|exists:user_types,id',
+        'dni' => 'string',
+        'birth_date' => 'date',
+        'actual_position' => 'string',
+        'address_street' => 'string',
+        'address_number' => 'string',
+        'address_city' => 'string',
+        'address_cp' => 'string',
+        'address_country' => 'string',
+        'phone' => 'string'
+    ]);
+
+    if($validator->fails()){
+        return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $author_rank = UserType::find(auth()->user()->user_type_id)->only('rank')['rank'];
+    $new_user_rank = UserType::find($request->get('user_type_id'))->only('rank')['rank'];
+
+    if ($author_rank < $new_user_rank || $author_rank == 1) {
+      $user = User::create(array_merge(
+        $validator->validated(),
+        ['password' => bcrypt($request->password)]
+      ));
+      $user->sendEmailVerificationNotification();
+      return response()->json(['message' => 'New user created.']);
+    }
+    else{
+      return response()->json(['message' => 'New user not created'],422);
+    }
+
+}
+
 
   /**
    * Remove the specified resource from storage.

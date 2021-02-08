@@ -57,6 +57,7 @@ Route::post('/auth/refresh', [AuthController::class, 'refresh'])->middleware('au
 
 /* user */
 Route::get('/user', [UserController::class, 'user'])->middleware('auth');
+Route::post('/user', [UserController::class, 'create'])->middleware('auth');
 Route::get('/users', [UserController::class, 'users'])->middleware('auth');
 Route::post('/user/{id}', [UserController::class, 'update'])->middleware('auth');
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
