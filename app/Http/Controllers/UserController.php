@@ -63,6 +63,28 @@ class UserController extends Controller
   }
 
   /**
+   * Display the specified resource.
+   *
+   * @param  int  $id
+   * @return \Illuminate\Http\Response
+   */
+  public function getUserById($id)
+  {
+
+    $minimum_rank = UserType::max('rank');
+    $user = User::find($id);
+    $author_rank = auth()->user()->userType->rank;
+    $requested_user_rank = $user->userType->rank;
+
+    if($author_rank <= $requested_user_rank || $author_rank == 1 || $minimum_rank != $author_rank){
+      return response()->json($this->customizeFields($user));
+    }
+    else {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+  }
+
+  /**
    * Display a listing of the resource.
    *
    * @return \Illuminate\Http\Response
@@ -78,6 +100,29 @@ class UserController extends Controller
     });
 
     return response()->json($users);
+  }
+
+    /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function usersNames()
+  {
+    /* get all users */
+    $minimum_rank = UserType::max('rank');
+    $author_rank = auth()->user()->userType->rank;
+    $users= User::whereHas('userType', function($q) use($author_rank){
+      $q->where('rank','>=', $author_rank );
+    })->get(['id','name','surname']);
+
+    if($minimum_rank != $author_rank){
+      return response()->json($users);
+    }
+    else {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
   }
 
 /**
