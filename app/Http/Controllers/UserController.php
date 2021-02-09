@@ -76,7 +76,10 @@ class UserController extends Controller
     $author_rank = auth()->user()->userType->rank;
     $requested_user_rank = $user->userType->rank;
 
-    if($author_rank <= $requested_user_rank || $author_rank == 1 || $minimum_rank != $author_rank){
+    if($author_rank <= $requested_user_rank ||
+      $author_rank == 1 || 
+      $minimum_rank != $author_rank || 
+      auth()->user()->id == $id){
       return response()->json($this->customizeFields($user));
     }
     else {
@@ -89,34 +92,39 @@ class UserController extends Controller
    *
    * @return \Illuminate\Http\Response
    */
-  public function users()
-  {
-    /* get all users */
-    $users = User::all();
+  // public function users()
+  // {
+  //   /* get all users */
+  //   $users = User::all();
 
-    /* customize user fields */
-    $users->transform(function ($user) {
-      return $this->customizeFields($user);
-    });
+  //   /* customize user fields */
+  //   $users->transform(function ($user) {
+  //     return $this->customizeFields($user);
+  //   });
 
-    return response()->json($users);
-  }
+  //   return response()->json($users);
+  // }
 
     /**
    * Display a listing of the resource.
    *
    * @return \Illuminate\Http\Response
    */
-  public function usersNames()
+  public function users()
   {
     /* get all users */
     $minimum_rank = UserType::max('rank');
     $author_rank = auth()->user()->userType->rank;
-    $users= User::whereHas('userType', function($q) use($author_rank){
-      $q->where('rank','>=', $author_rank );
-    })->get(['id','name','surname']);
 
     if($minimum_rank != $author_rank){
+      $users = User::whereHas('userType', function($q) use($author_rank){
+        $q->where('rank','>=', $author_rank );
+      })->get();
+  
+      /* customize user fields */
+      $users->transform(function ($user) {
+        return $this->customizeFields($user);
+      });
       return response()->json($users);
     }
     else {
