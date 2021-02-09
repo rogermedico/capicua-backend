@@ -24,7 +24,7 @@ class UserController extends Controller
   {
 
     /* user type */
-    $user->user_type = UserType::find($user->user_type_id)->only(['rank', 'name']);
+    $user->user_type = UserType::find($user->user_type_id);//only(['rank', 'name']);
     unset($user->user_type_id);
 
     /* courses */
