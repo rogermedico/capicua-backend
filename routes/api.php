@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\UserTypesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +64,9 @@ Route::get('/users', [UserController::class, 'users'])->middleware('auth');
 Route::post('/user/{id}', [UserController::class, 'update'])->middleware('auth');
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
 Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
+
+/* user types */
+Route::get('/usertypes', [UserTypesController::class, 'userTypes'])->middleware('auth');
 
 /* email */
 Route::get('/email/verify', [VerifyEmailController::class, 'sendVerifyEmail'])->middleware('auth')->name('verification.notice');
