@@ -241,15 +241,15 @@ class UserController extends Controller
         'email' => 'required|string|email|max:100|unique:users',
         'password' => 'required|string|min:8',
         'user_type_id' => 'required|integer|exists:user_types,id',
-        'dni' => 'string',
-        'birth_date' => 'date',
-        'actual_position' => 'string',
-        'address_street' => 'string',
-        'address_number' => 'string',
-        'address_city' => 'string',
-        'address_cp' => 'string',
-        'address_country' => 'string',
-        'phone' => 'string'
+        'dni' => 'string|nullable',
+        'birth_date' => 'date|nullable',
+        'actual_position' => 'string|nullable',
+        'address_street' => 'string|nullable',
+        'address_number' => 'string|nullable',
+        'address_city' => 'string|nullable',
+        'address_cp' => 'string|nullable',
+        'address_country' => 'string|nullable',
+        'phone' => 'string|nullable'
     ]);
 
     if($validator->fails()){
@@ -265,7 +265,7 @@ class UserController extends Controller
         ['password' => bcrypt($request->password)]
       ));
       $user->sendEmailVerificationNotification();
-      return response()->json(['message' => 'New user created.']);
+      return response()->json($this->customizeFields(User::find($user->id)));
     }
     else{
       return response()->json(['message' => 'New user not created'],422);
