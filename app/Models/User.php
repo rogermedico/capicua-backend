@@ -35,6 +35,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'phone',
         'dni',
         'user_type_id',
+        'deleted'
     ];
 
     /**

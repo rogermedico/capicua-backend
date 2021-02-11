@@ -64,6 +64,7 @@ Route::get('/users', [UserController::class, 'users'])->middleware('auth');
 Route::post('/user/{id}', [UserController::class, 'update'])->middleware('auth');
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
 Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
+Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
 
 /* user types */
 Route::get('/usertypes', [UserTypesController::class, 'userTypes'])->middleware('auth');

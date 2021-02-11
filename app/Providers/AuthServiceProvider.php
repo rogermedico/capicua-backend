@@ -33,7 +33,8 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         VerifyEmail::createUrlUsing(function($user){
-          return env('FRONTEND_URL').env('FRONTEND_VERIFY_EMAIL').'/'.$user->getKey().'/'.sha1($user->getEmailForPasswordReset());
+          return env('FRONTEND_URL').env('FRONTEND_VERIFY_EMAIL').'/'.$user->getKey().'/'.sha1($user->getEmailForVerification());
         });
+
     }
 }

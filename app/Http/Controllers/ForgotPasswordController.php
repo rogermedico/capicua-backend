@@ -13,6 +13,10 @@ class ForgotPasswordController extends Controller
   public function sendForgotPasswordEmail(Request $request){
     $request->validate(['email' => 'required|email']);
 
+    if(User::where('email',$request->email)->value('deleted')){
+      return response()->json(['message' => 'Reset password email not sent.'],400);
+    }
+
     $status = Password::sendResetLink(
         $request->only('email')
     );
@@ -32,6 +36,9 @@ class ForgotPasswordController extends Controller
       'password' => 'required|min:8|confirmed',
     ]);
 
+    if(User::where('email',$request->email)->value('deleted')){
+      return response()->json(['message' => 'Password not updated.'],400);
+    }
 
     $status = Password::reset(
         $request->only('email', 'password', 'password_confirmation', 'token'),

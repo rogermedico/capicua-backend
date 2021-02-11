@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 // use Illuminate\Support\Facades\Mail;
 // use Illuminate\Support\Facades\Password;
 // use Illuminate\Support\Str;
-// use App\Models\User;
+use App\Models\User;
 // use App\models\DriverLicence;
 // use App\Models\UserType;
 // use App\Models\Education;
@@ -77,7 +77,11 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if (! $token = auth()->attempt($validator->validated())) {
+        if(User::where('email',$request->email)->value('deleted')){
+          return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        if (!$token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
