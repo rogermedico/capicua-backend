@@ -9,6 +9,7 @@ use App\models\DriverLicence;
 use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
+use App\Notifications\CustomNewUserNotification;
 use Validator;
 
 class UserController extends Controller
@@ -264,7 +265,11 @@ class UserController extends Controller
         $validator->validated(),
         ['password' => bcrypt($request->password)]
       ));
-      $user->sendEmailVerificationNotification();
+      // $user->sendEmailVerificationNotification();
+      $user->notify(new CustomNewUserNotification([
+        'email' => $user->email,
+        'password' => $request->password
+        ]));
       return response()->json($this->customizeFields(User::find($user->id)));
     }
     else{
