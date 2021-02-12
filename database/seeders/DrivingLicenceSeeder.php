@@ -4,10 +4,10 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Course;
-use App\Models\DriverLicence;
+use App\Models\DrivingLicence;
 use App\Models\User;
 
-class DriverLicenceSeeder extends Seeder
+class DrivingLicenceSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -20,13 +20,13 @@ class DriverLicenceSeeder extends Seeder
       User::all()->each(function ($user) /*use (&$driverLicences)*/{
 
         if((bool) random_int(0, 1)){
-          $driverLicence = DriverLicence::create([
+          $driverLicence = DrivingLicence::create([
             'user_id' => $user['id'],
             'type'=> 'A'
             ]);
         }
         if((bool) random_int(0, 1)){
-          $driverLicence = DriverLicence::create([
+          $driverLicence = DrivingLicence::create([
             'user_id' => $user['id'],
             'type'=> 'B'
             ]);

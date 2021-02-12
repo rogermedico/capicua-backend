@@ -35,7 +35,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'phone',
         'dni',
         'user_type_id',
-        'deleted'
+        'deactivated'
     ];
 
     /**
@@ -58,6 +58,7 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'deactivated' => 'boolean',
     ];
 
     /**
@@ -90,8 +91,8 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
       return $this->belongsTo(UserType::class);
     }
 
-    public function driverLicences(){
-      return $this->hasMany(DriverLicence::class);
+    public function drivingLicences(){
+      return $this->hasMany(DrivingLicence::class);
     }
 
     public function educations(){

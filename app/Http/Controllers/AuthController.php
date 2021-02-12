@@ -77,7 +77,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if(User::where('email',$request->email)->value('deleted')){
+        if(User::where('email',$request->email)->value('deactivated')){
           return response()->json(['error' => 'Unauthorized'], 401);
         }
 

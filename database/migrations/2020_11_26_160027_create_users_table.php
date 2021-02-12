@@ -30,7 +30,7 @@ class CreateUsersTable extends Migration
       $table->string('address_country')->nullable();
       $table->string('phone')->nullable();
       $table->string('dni')->nullable();
-      $table->boolean('deleted')->default(false);
+      $table->boolean('deactivated')->default(false);
       $table->bigInteger('user_type_id')->unsigned();
       $table->foreign('user_type_id')->references('id')->on('user_types');
       $table->timestamps();

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\models\DriverLicence;
+use App\models\DrivingLicence;
 use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
@@ -39,7 +39,7 @@ class UserController extends Controller
     });
 
     /* driver licences */
-    $user->driving_licences = DriverLicence::where('user_id', $user->id)->get();
+    $user->driving_licences = DrivingLicence::where('user_id', $user->id)->get();
 
     /* educations */
     $user->educations = Education::where('user_id', $user->id)->get();
@@ -189,7 +189,6 @@ class UserController extends Controller
    */
   public function update(Request $request, $id)
   {
-    var_dump($id);
 
     $request->validate([
       'name' => 'string|between:2,100',
@@ -205,24 +204,25 @@ class UserController extends Controller
       'address_cp' => 'string',
       'address_country' => 'string',
       'phone' => 'string',
+      'deactivated' => 'boolean',
     ]);
 
     $user = User::find($id);
     $original_email = $user->email;
     $original_user_type_id = $user->user_type_id;
-    $author_rank = UserType::find(auth()->user()->user_type_id)->only('rank')['rank'];
+    $author_rank = auth()->user()->userType->rank;
     $updated_user_rank = UserType::find($user->user_type_id)->only('rank')['rank'];
   
-
     if ($author_rank < $updated_user_rank || $author_rank == 1) {
       $user->fill($request->all());
-      if(auth()->user()->user_type_id >= $request->get('user_type_id') ) {
+      if(auth()->user()->userType->rank >= UserType::find($user->user_type_id)->only('rank')['rank'] ) {
         $user->user_type_id = $original_user_type_id;
+        $user->deactivated = false;
       }
-        
+
       $user->save();
       if($original_email != $user->email) $user->sendEmailVerificationNotification();
-      return response()->json(['message' => 'User updated.']);
+      return response()->json($this->customizeFields($user));
     }
     else{
       return response()->json(['message' => 'User not updated'],422);

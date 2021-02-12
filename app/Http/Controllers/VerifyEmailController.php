@@ -18,7 +18,7 @@ class VerifyEmailController extends Controller
   public function verifyEmail(Request $request){
     $user = User::find($request->route('id'));
 
-    if($user->deleted){
+    if($user->deactivated){
       return response()->json(['message' => 'Email not verified.'],400);
     }
 
