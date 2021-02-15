@@ -208,25 +208,40 @@ class UserController extends Controller
     ]);
 
     $user = User::find($id);
-    $original_email = $user->email;
-    $original_user_type_id = $user->user_type_id;
     $author_rank = auth()->user()->userType->rank;
-    $updated_user_rank = UserType::find($user->user_type_id)->only('rank')['rank'];
-  
-    if ($author_rank < $updated_user_rank || $author_rank == 1) {
-      $user->fill($request->all());
-      if(auth()->user()->userType->rank >= UserType::find($user->user_type_id)->only('rank')['rank'] ) {
-        $user->user_type_id = $original_user_type_id;
-        $user->deactivated = false;
-      }
+    $updated_user_rank = UserType::find($user->user_type_id)->rank;
 
-      $user->save();
-      if($original_email != $user->email) $user->sendEmailVerificationNotification();
-      return response()->json($this->customizeFields($user));
-    }
-    else{
+    /* update password or email_verified_at: always forbidden */
+    if($request->password || $request->email_verified_at) {
       return response()->json(['message' => 'User not updated'],422);
     }
+
+    /* update user_type_id: forbidden if author_rank >= new rank  */
+    if($request->user_type_id && $author_rank >= $request->user_type_id){
+      return response()->json(['message' => 'User not updated'],422);
+    };
+
+    /* update deactivated: forbidden if updated user is admin and author_rank >= updated user */
+    if($request->deactivated && ($author_rank >= $updated_user_rank || $updated_user_rank == 1)){
+      return response()->json(['message' => 'User not updated'],422);
+    };
+
+    /* update other fields: forbidden if author_rank >= updated_user_rank or author_rank is not admin (admin updating his/her own fields) */
+    if ($author_rank >= $updated_user_rank && $author_rank != 1) {
+      return response()->json(['message' => 'User not updated'],422);
+    }
+
+    $user->fill($request->all());
+
+    /* update email: send verification email and also set email_verified_at to null */
+    if($request->email) {
+      $user->sendEmailVerificationNotification();
+      $user->email_verified_at = null;
+    }
+
+    $user->save();
+
+    return response()->json($this->customizeFields($user));
 
   }
 
@@ -257,10 +272,10 @@ class UserController extends Controller
         return response()->json($validator->errors()->toJson(), 400);
     }
 
-    $author_rank = UserType::find(auth()->user()->user_type_id)->only('rank')['rank'];
-    $new_user_rank = UserType::find($request->get('user_type_id'))->only('rank')['rank'];
+    $author_rank = UserType::find(auth()->user()->user_type_id)->rank;
+    $new_user_rank = UserType::find($request->get('user_type_id'))->rank;
 
-    if ($author_rank < $new_user_rank || $author_rank == 1) {
+    if ($author_rank < $new_user_rank) {
       $user = User::create(array_merge(
         $validator->validated(),
         ['password' => bcrypt($request->password)]
