@@ -233,6 +233,16 @@ class UserController extends Controller
 
     $user->fill($request->all());
 
+    // /* driving licences */
+    // if ($request->driving_licences) {
+    //   $user->drivingLicences()->delete();
+    //   foreach($request->driving_licences as $driving_licence)
+    //   $user->drivingLicences()->insert([
+    //     'user_id' => $user->id,
+    //     'type' => $driving_licence
+    //   ]);
+    // }
+
     /* update email: send verification email and also set email_verified_at to null */
     if($request->email) {
       $user->sendEmailVerificationNotification();
