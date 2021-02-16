@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\models\DrivingLicence;
 use App\Models\UserType;
@@ -191,20 +192,21 @@ class UserController extends Controller
   {
 
     $request->validate([
-      'name' => 'string|between:2,100',
-      'surname' => 'string|between:2,100',
-      'email' => 'string|email|max:100|unique:users',
-      'user_type_id' => 'integer|exists:user_types,id',
-      'dni' => 'string',
-      'birth_date' => 'date',
-      'actual_position' => 'string',
-      'address_street' => 'string',
-      'address_number' => 'string',
-      'address_city' => 'string',
-      'address_cp' => 'string',
-      'address_country' => 'string',
-      'phone' => 'string',
-      'deactivated' => 'boolean',
+      'name' => 'required|string|between:2,100',
+      'surname' => 'required|string|between:2,100',
+      'email' => 'required|string|email|max:100',
+      'user_type_id' => 'required|integer|exists:user_types,id',
+      'dni' => 'nullable|string',
+      'birth_date' => 'nullable|date',
+      'actual_position' => 'nullable|string',
+      'address_street' => 'nullable|string',
+      'address_number' => 'nullable|string',
+      'address_city' => 'nullable|string',
+      'address_cp' => 'nullable|string',
+      'address_country' => 'nullable|string',
+      'phone' => 'nullable|string',
+      'deactivated' => 'nullable|boolean',
+      'driving_licences' => 'nullable|string',
     ]);
 
     $user = User::find($id);
@@ -231,20 +233,30 @@ class UserController extends Controller
       return response()->json(['message' => 'User not updated'],422);
     }
 
+    /*update email: check if uniqueness */
+    if($request->email != $user->email){
+      if(User::where('email',$request->email)->first()) return response()->json(['message' => 'User not updated'],422);
+    }
+
+    $original_email = $user->email;
     $user->fill($request->all());
 
-    // /* driving licences */
+    /* driving licences */
     // if ($request->driving_licences) {
-    //   $user->drivingLicences()->delete();
-    //   foreach($request->driving_licences as $driving_licence)
-    //   $user->drivingLicences()->insert([
-    //     'user_id' => $user->id,
-    //     'type' => $driving_licence
-    //   ]);
+      $user->drivingLicences()->delete();
+      $driving_licences = array_filter(explode(',',str_replace(' ','',$request->driving_licences)));
+      foreach($driving_licences as $driving_licence){
+        $user->drivingLicences()->insert([
+          'user_id' => $user->id,
+          'type' => $driving_licence,
+          'created_at' => Carbon::now(),
+          'updated_at' => Carbon::now()
+        ]);
+      }
     // }
 
     /* update email: send verification email and also set email_verified_at to null */
-    if($request->email) {
+    if($request->email != $original_email) {
       $user->sendEmailVerificationNotification();
       $user->email_verified_at = null;
     }
@@ -275,7 +287,8 @@ class UserController extends Controller
         'address_city' => 'string|nullable',
         'address_cp' => 'string|nullable',
         'address_country' => 'string|nullable',
-        'phone' => 'string|nullable'
+        'phone' => 'string|nullable',
+        'driving_licences' => 'string|nullable',
     ]);
 
     if($validator->fails()){
@@ -290,6 +303,19 @@ class UserController extends Controller
         $validator->validated(),
         ['password' => bcrypt($request->password)]
       ));
+      
+      if ($request->driving_licences) {
+        $driving_licences = explode(',',str_replace(' ','',$request->driving_licences));
+        foreach($driving_licences as $driving_licence){
+          $user->drivingLicences()->insert([
+            'user_id' => $user->id,
+            'type' => $driving_licence,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now()
+          ]);
+        }
+      }
+
       // $user->sendEmailVerificationNotification();
       $user->notify(new CustomNewUserNotification([
         'email' => $user->email,
