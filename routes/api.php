@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\UserTypesController;
+use App\Http\Controllers\CourseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,10 @@ Route::post('/user/{id}', [UserController::class, 'update'])->middleware('auth')
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
 Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
 Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
+
+/* course */
+Route::post('/course', [CourseController::class, 'createOrUpdateCourse'])->middleware('auth');
+Route::delete('/course/{user_id}/{course_id}', [CourseController::class, 'deleteCourse'])->middleware('auth');
 
 /* user types */
 Route::get('/usertypes', [UserTypesController::class, 'userTypes'])->middleware('auth');

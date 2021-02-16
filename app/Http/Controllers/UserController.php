@@ -32,6 +32,7 @@ class UserController extends Controller
     /* courses */
     $user->courses->transform(function ($course) {
       return [
+        'id' => $course->id,
         'name' => $course->name,
         'number' => $course->pivot->number,
         'expedition_date' => $course->pivot->expedition_date,
