@@ -69,6 +69,7 @@ Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware(
 
 /* course */
 Route::post('/course', [CourseController::class, 'createOrUpdateCourse'])->middleware('auth');
+Route::put('/course', [CourseController::class, 'updateCourse'])->middleware('auth');
 Route::delete('/course/{user_id}/{course_id}', [CourseController::class, 'deleteCourse'])->middleware('auth');
 
 /* constants */
