@@ -193,10 +193,10 @@ class UserController extends Controller
   {
 
     $request->validate([
-      'name' => 'required|string|between:2,100',
-      'surname' => 'required|string|between:2,100',
-      'email' => 'required|string|email|max:100',
-      'user_type_id' => 'required|integer|exists:user_types,id',
+      'name' => 'sometimes|required|string|between:2,100',
+      'surname' => 'sometimes|required|string|between:2,100',
+      'email' => 'sometimes|required|string|email|max:100',
+      'user_type_id' => 'sometimes|required|integer|exists:user_types,id',
       'dni' => 'nullable|string',
       'birth_date' => 'nullable|date',
       'actual_position' => 'nullable|string',
