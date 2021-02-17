@@ -9,9 +9,10 @@ use App\models\DriverLicence;
 use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
+use App\Models\Course;
 use Validator;
 
-class UserTypesController extends Controller
+class ConstantsController extends Controller
 {
 
   // public function __contstruct()
@@ -30,6 +31,12 @@ class UserTypesController extends Controller
     $author_rank = auth()->user()->userType->rank;
     $user_types = UserType::where('rank','>=', $author_rank)->get();
     return response()->json($user_types);
+  }
+
+  public function courseTypes()
+  {
+    $course_types = Course::all();
+    return response()->json($course_types);
   }
 
 }
