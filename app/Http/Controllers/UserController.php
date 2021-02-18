@@ -213,37 +213,41 @@ class UserController extends Controller
     $user = User::find($id);
     $author_rank = auth()->user()->userType->rank;
     $updated_user_rank = UserType::find($user->user_type_id)->rank;
+    
 
     /* update password or email_verified_at: always forbidden */
     if($request->password || $request->email_verified_at) {
-      return response()->json(['message' => 'User not updated'],422);
+      return response()->json(['message' => 'User not updated1'],422);
     }
 
-    /* update user_type_id: forbidden if author_rank >= new rank  */
-    if($request->user_type_id && $author_rank >= $request->user_type_id){
-      return response()->json(['message' => 'User not updated'],422);
+    /* update user_type_id: forbidden if author_rank >= updated user rank  */
+    if($request->user_type_id){
+      $updated_user_new_rank = UserType::find($request->user_type_id)->rank;
+      if(($author_rank >= $updated_user_rank) && ($author_rank == 1 && $updated_user_rank == 1 && $updated_user_new_rank != 1)){
+        return response()->json(['message' => 'User not updated2'],422);
+      }
     };
 
     /* update deactivated: forbidden if updated user is admin and author_rank >= updated user */
     if($request->deactivated && ($author_rank >= $updated_user_rank || $updated_user_rank == 1)){
-      return response()->json(['message' => 'User not updated'],422);
+      return response()->json(['message' => 'User not updated3'],422);
     };
 
     /* update other fields: forbidden if author_rank >= updated_user_rank or author_rank is not admin (admin updating his/her own fields) */
     if ($author_rank >= $updated_user_rank && $author_rank != 1) {
-      return response()->json(['message' => 'User not updated'],422);
+      return response()->json(['message' => 'User not updated4'],422);
     }
 
     /*update email: check if uniqueness */
     if($request->email != $user->email){
-      if(User::where('email',$request->email)->first()) return response()->json(['message' => 'User not updated'],422);
+      if(User::where('email',$request->email)->first()) return response()->json(['message' => 'User not updated5'],422);
     }
 
     $original_email = $user->email;
     $user->fill($request->all());
 
     /* driving licences */
-    // if ($request->driving_licences) {
+    if ($request->driving_licences) {
       $user->drivingLicences()->delete();
       $driving_licences = array_filter(explode(',',str_replace(' ','',$request->driving_licences)));
       foreach($driving_licences as $driving_licence){
@@ -254,7 +258,7 @@ class UserController extends Controller
           'updated_at' => Carbon::now()
         ]);
       }
-    // }
+    }
 
     /* update email: send verification email and also set email_verified_at to null */
     if($request->email != $original_email) {
