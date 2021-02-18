@@ -24,11 +24,13 @@ class UserSeeder extends Seeder
       ]);
       User::factory()->create([
         'email' => 'moderator@gmail.com',
-        'user_type_id' => 2
+        'user_type_id' => 2,
+        'email_verified_at' => Carbon::now()
       ]);
       User::factory()->create([
         'email' => 'worker@gmail.com',
-        'user_type_id' => 3
+        'user_type_id' => 3,
+        'email_verified_at' => Carbon::now()
       ]);
       User::factory()->times(50)->create();
 

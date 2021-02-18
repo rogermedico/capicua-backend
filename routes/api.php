@@ -8,6 +8,7 @@ use App\Http\Controllers\VerifyEmailController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ConstantsController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EducationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,9 +69,14 @@ Route::post('/user/password/check', [UserController::class, 'checkPassword'])->m
 Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
 
 /* course */
-Route::post('/course', [CourseController::class, 'createOrUpdateCourse'])->middleware('auth');
+Route::post('/course', [CourseController::class, 'createCourse'])->middleware('auth');
 Route::put('/course', [CourseController::class, 'updateCourse'])->middleware('auth');
 Route::delete('/course/{user_id}/{course_id}', [CourseController::class, 'deleteCourse'])->middleware('auth');
+
+/* education */
+Route::post('/education', [EducationController::class, 'createEducation'])->middleware('auth');
+Route::put('/education', [EducationController::class, 'updateEducation'])->middleware('auth');
+Route::delete('/education/{education_id}', [EducationController::class, 'deleteEducation'])->middleware('auth');
 
 /* constants */
 Route::get('/constants/usertypes', [ConstantsController::class, 'userTypes'])->middleware('auth');

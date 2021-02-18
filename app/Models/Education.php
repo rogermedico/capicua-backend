@@ -17,6 +17,7 @@ class Education extends Model
      * @var array
      */
     protected $fillable = [
+      'user_id',
       'name',
       'finish_date',
       'finished'
@@ -28,10 +29,18 @@ class Education extends Model
      * @var array
      */
     protected $hidden = [
-      'user_id',
       'created_at',
       'updated_at'
-  ];
+    ];
+
+      /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+      'finished' => 'boolean'
+    ];
 
     public function user()
     {

@@ -17,7 +17,7 @@ use Validator;
 class CourseController extends Controller
 {
 
-  public function createOrUpdateCourse(Request $request) {
+  public function createCourse(Request $request) {
     $validator = Validator::make($request->all(), [
       'user_id' => 'required|integer|exists:users,id',
       'course_id' => 'required|integer|exists:courses,id',
