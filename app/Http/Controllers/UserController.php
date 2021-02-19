@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\models\DrivingLicence;
@@ -48,6 +49,10 @@ class UserController extends Controller
 
     /* languages */
     $user->languages = Language::where('user_id', $user->id)->get();
+
+    /* avatar */
+    if($user->avatar) $user->avatar = true;//base64_encode(Storage::get($user->avatar));
+    else $user->avatar = false;
 
     return $user;
   }
@@ -377,7 +382,31 @@ public function getUserAvatar($id){
     return response()->json(['message' => 'Unauthorized'],401);
   }
 
-  return response()->file(storage_path('app'.DIRECTORY_SEPARATOR.$user->avatar));
+
+  return response()->json([
+    'avatar' => base64_encode(Storage::get($user->avatar)),
+    'extension' => pathinfo(storage_path().$user->avatar, PATHINFO_EXTENSION)
+    ],200);
+
+}
+
+public function deleteUserAvatar($id){
+
+  $user = User::find($id);
+  if(!$user) {
+    return response()->json(['message' => 'User not found'],422);
+  }
+
+  $author_rank = auth()->user()->userType->rank;
+  if( $author_rank > $user->userType->rank && $author_rank != 1) {
+    return response()->json(['message' => 'Unauthorized'],401);
+  }
+
+  Storage::delete($user->avatar);
+  $user->avatar = null;
+  $user->save();
+
+  return response()->json(null,200);
 
 }
 
