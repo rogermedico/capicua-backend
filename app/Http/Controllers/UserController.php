@@ -215,8 +215,8 @@ class UserController extends Controller
     $updated_user_rank = UserType::find($user->user_type_id)->rank;
     
 
-    /* update password or email_verified_at: always forbidden */
-    if($request->password || $request->email_verified_at) {
+    /* update password, email_verified_at or avatar: always forbidden */
+    if($request->password || $request->email_verified_at || $request->avatar) {
       return response()->json(['message' => 'User not updated1'],422);
     }
 
@@ -334,47 +334,52 @@ class UserController extends Controller
 
 }
 
+public function setUserAvatar(Request $request, $id){
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  int  $id
-   * @return \Illuminate\Http\Response
-   */
-  // public function destroy($id)
-  // {
-  //   if ($request->user()->id == 3) {
-  //     return response()->json(['error' => 'You cant delete users.'], 403);
-  //   }
-  //   $user->delete();
-  //   return response()->json(null, 204);
-  // }
+  $user = User::find($id);
+  if(!$user) {
+    return response()->json(['message' => 'Avatar not updated'],422);
+  }
 
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  // public function store(Request $request)
-  // {
-  //   $this->validate($request, [
-  //     'name' => 'required',
-  //     'surname' => 'required',
-  //     'email' => 'required',
-  //     'password' => 'required',
-  //     'user_type_id' => 'required',
-  //   ]);
-  //   $user = new User;
-  //   $user->name = $request->name;
-  //   $user->surname = $request->surname;
-  //   $user->email = $request->email;
-  //   $user->password = Hash::make($request->password);
-  //   $user->user_type_id = $request->user_type_id;
-  //   $user->save();
+  $author_rank = auth()->user()->userType->rank;
+  if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    return response()->json(['message' => 'Unauthorized'],401);
+  }
 
-  //   return new UserResource($user);
-  // }
+  $validator = Validator::make($request->all(), [
+    'avatar' => 'required|mimes:jpeg,png',
+  ]);
+
+  if($validator->fails()){
+      return response()->json($validator->errors()->toJson(), 400);
+  }
+
+  $extension = $request->file('avatar')->extension() == 'jpeg'? 'jpg': $request->file('avatar')->extension() ;
+  $path = $request->file('avatar')->storeAs('avatars'.DIRECTORY_SEPARATOR.$id,'avatar.'.$extension);
+
+  /* avoid windows/linux conflict */
+  $path = str_replace('/',DIRECTORY_SEPARATOR,$path);
+
+  $user->avatar = $path;
+  $user->save();
+
+}
+
+public function getUserAvatar($id){
+
+  $user = User::find($id);
+  if(!$user) {
+    return response()->json(['message' => 'User not found'],422);
+  }
+
+  $author_rank = auth()->user()->userType->rank;
+  if( $author_rank > $user->userType->rank && $author_rank != 1) {
+    return response()->json(['message' => 'Unauthorized'],401);
+  }
+
+  return response()->file(storage_path('app'.DIRECTORY_SEPARATOR.$user->avatar));
+
+}
 
 
 

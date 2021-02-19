@@ -32,6 +32,7 @@ class CreateUsersTable extends Migration
       $table->string('dni')->nullable();
       $table->boolean('deactivated')->default(false);
       $table->bigInteger('user_type_id')->unsigned();
+      $table->string('avatar')->nullable();
       $table->foreign('user_type_id')->references('id')->on('user_types');
       $table->timestamps();
     });

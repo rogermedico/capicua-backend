@@ -37,6 +37,8 @@ Route::post('/user/{id}', [UserController::class, 'update'])->middleware('auth')
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
 Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
 Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
+Route::post('/user/avatar/{id}', [UserController::class, 'setUserAvatar'])->middleware('auth');
+Route::get('/user/avatar/{id}', [UserController::class, 'getUserAvatar'])->middleware('auth');
 
 /* course */
 Route::post('/course', [CourseController::class, 'createCourse'])->middleware('auth');
