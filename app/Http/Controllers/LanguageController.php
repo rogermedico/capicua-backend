@@ -20,7 +20,7 @@ class LanguageController extends Controller
     $validator = Validator::make($request->all(), [
       'user_id' => 'required|integer|exists:users,id',
       'name' => 'required|string|between:2,100',
-      'level' => 'required|boolean',
+      'level' => 'required|string',
       'finish_date' => 'nullable|date',
     ]);
 
@@ -50,7 +50,7 @@ class LanguageController extends Controller
     $validator = Validator::make($request->all(), [
       'id' => 'required|integer|exists:languages,id',
       'name' => 'required|string|between:2,100',
-      'level' => 'required|boolean',
+      'level' => 'required|string',
       'finish_date' => 'nullable|date',
     ]);
 
