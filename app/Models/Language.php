@@ -17,6 +17,7 @@ class Language extends Model
      * @var array
      */
     protected $fillable = [
+      'user_id',
       'name',
       'level',
       'finish_date'
@@ -28,7 +29,6 @@ class Language extends Model
      * @var array
      */
     protected $hidden = [
-      'user_id',
       'created_at',
       'updated_at'
   ];

@@ -9,6 +9,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ConstantsController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EducationController;
+use App\Http\Controllers\LanguageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,37 +21,6 @@ use App\Http\Controllers\EducationController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-
-
-// Route::apiResource('/users',UserController::class);
-// Route::middleware('auth:api')->get('/users', [UserController::class, 'index']);
-// Route::middleware('auth:api')->get('/users/{user}', [UserController::class, 'show']);
-// Route::middleware('auth:api')->post('/users', [UserController::class, 'store']);
-
-
-//just for test
-// Route::get('/users', [UserController::class, 'index']);
-// Route::get('/users/{user}', [UserController::class, 'show']);
-// Route::post('/users', [UserController::class, 'store']);
-
-// Route::group([
-//   'middleware' => 'api',
-//   'prefix' => 'auth'
-
-// ], function ($router) {
-//   Route::post('/login', [AuthController::class, 'login']);
-//   Route::post('/register', [AuthController::class, 'register']);
-//   Route::post('/logout', [AuthController::class, 'logout']);
-//   Route::post('/refresh', [AuthController::class, 'refresh']);
-//   Route::get('/profile', [AuthController::class, 'userProfile']);    
-//   Route::get('/email/verify', [AuthController::class, 'sendVerifyEmail'])->name('verification.notice');  
-//   Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])->name('verification.verify');      
-// });
 
 /* auth */
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -77,6 +47,11 @@ Route::delete('/course/{user_id}/{course_id}', [CourseController::class, 'delete
 Route::post('/education', [EducationController::class, 'createEducation'])->middleware('auth');
 Route::put('/education', [EducationController::class, 'updateEducation'])->middleware('auth');
 Route::delete('/education/{education_id}', [EducationController::class, 'deleteEducation'])->middleware('auth');
+
+/* language */
+Route::post('/language', [LanguageController::class, 'createLanguage'])->middleware('auth');
+Route::put('/language', [LanguageController::class, 'updateLanguage'])->middleware('auth');
+Route::delete('/language/{language_id}', [LanguageController::class, 'deleteLanguage'])->middleware('auth');
 
 /* constants */
 Route::get('/constants/usertypes', [ConstantsController::class, 'userTypes'])->middleware('auth');
