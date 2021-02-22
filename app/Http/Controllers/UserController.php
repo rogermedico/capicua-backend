@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use App\Models\User;
 use App\models\DrivingLicence;
 use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
 use App\Notifications\CustomNewUserNotification;
+
 use Validator;
 
 class UserController extends Controller
@@ -352,11 +354,17 @@ public function setUserAvatar(Request $request, $id){
   }
 
   $validator = Validator::make($request->all(), [
-    'avatar' => 'required|mimes:jpeg,png',
+    'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2000',
   ]);
 
   if($validator->fails()){
       return response()->json($validator->errors()->toJson(), 400);
+  }
+
+  try{
+    Storage::delete($user->avatar);
+  } catch(FileNotFoundException $e){
+    
   }
 
   $extension = $request->file('avatar')->extension() == 'jpeg'? 'jpg': $request->file('avatar')->extension() ;
@@ -365,8 +373,15 @@ public function setUserAvatar(Request $request, $id){
   /* avoid windows/linux conflict */
   $path = str_replace('/',DIRECTORY_SEPARATOR,$path);
 
+
+  
   $user->avatar = $path;
   $user->save();
+
+  return response()->json([
+    'avatar' => base64_encode(Storage::get($user->avatar)),
+    'extension' => pathinfo(storage_path().$user->avatar, PATHINFO_EXTENSION)
+    ],200);
 
 }
 
@@ -382,9 +397,15 @@ public function getUserAvatar($id){
     return response()->json(['message' => 'Unauthorized'],401);
   }
 
+  try{
+    $file = Storage::get($user->avatar);
+  } catch (FileNotFoundException $e) {
+    return response()->json(['message' => 'Avatar not found'],422);
+  }
+
 
   return response()->json([
-    'avatar' => base64_encode(Storage::get($user->avatar)),
+    'avatar' => base64_encode($file),
     'extension' => pathinfo(storage_path().$user->avatar, PATHINFO_EXTENSION)
     ],200);
 
