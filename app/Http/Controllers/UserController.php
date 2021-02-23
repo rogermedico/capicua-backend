@@ -69,7 +69,15 @@ class UserController extends Controller
    */
   public function user()
   {
-    return response()->json($this->customizeFields(auth()->user()));
+    $avatar_path = auth()->user()->avatar;
+    $user = $this->customizeFields(auth()->user());
+    if($user->avatar) {
+      $user->avatar = [
+        'avatar' => base64_encode(Storage::get($avatar_path)),
+        'extension' => pathinfo(storage_path().$avatar_path, PATHINFO_EXTENSION)
+      ];
+    };
+    return response()->json($user);
   }
 
   /**
@@ -90,7 +98,15 @@ class UserController extends Controller
       $author_rank == 1 || 
       $minimum_rank != $author_rank || 
       auth()->user()->id == $id){
-      return response()->json($this->customizeFields($user));
+        $avatar_path = $user->avatar;
+        $user = $this->customizeFields($user);
+        if($user->avatar) {
+          $user->avatar = [
+            'avatar' => base64_encode(Storage::get($avatar_path)),
+            'extension' => pathinfo(storage_path().$avatar_path, PATHINFO_EXTENSION)
+          ];
+        };
+      return response()->json($user);
     }
     else {
       return response()->json(['message' => 'Unauthorized'], 401);
