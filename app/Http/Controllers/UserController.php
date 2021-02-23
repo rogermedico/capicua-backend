@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use App\Models\User;
@@ -379,12 +380,17 @@ public function setUserAvatar(Request $request, $id){
 
   try{
     Storage::delete($user->avatar);
-  } catch(FileNotFoundException $e){
-    
-  }
+  } catch(FileNotFoundException $e){ }
 
-  $extension = $request->file('avatar')->extension() == 'jpeg'? 'jpg': $request->file('avatar')->extension() ;
-  $path = $request->file('avatar')->storeAs('avatars'.DIRECTORY_SEPARATOR.$id,'avatar.'.$extension);
+  $image = Image::make($request->file('avatar'));
+  $image->fit(300,300, function ($constraint) {
+    $constraint->upsize();
+  });
+  $path = 'avatars'.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.'avatar.jpg';
+  $image->save(storage_path('app'.DIRECTORY_SEPARATOR.$path));
+
+  // $extension = $request->file('avatar')->extension() == 'jpeg'? 'jpg': $request->file('avatar')->extension() ;
+  // $path = $request->file('avatar')->storeAs('avatars'.DIRECTORY_SEPARATOR.$id,'avatar.'.$extension);
 
   /* avoid windows/linux conflict */
   $path = str_replace('/',DIRECTORY_SEPARATOR,$path);
