@@ -375,16 +375,24 @@ class UserController extends Controller
       return response()->json($validator->errors()->toJson(), 400);
     }
 
-    try {
-      Storage::delete($user->avatar);
-    } catch (FileNotFoundException $e) {
-    }
-
     $image = Image::make($request->file('avatar'));
     $image->fit(300, 300, function ($constraint) {
       $constraint->upsize();
     });
-    $path = 'avatars' . DIRECTORY_SEPARATOR . $id . DIRECTORY_SEPARATOR . 'avatar.jpg';
+    $filename = 'avatar.jpg';
+    $dir = 'avatars' . DIRECTORY_SEPARATOR . $id;
+    $path = $dir . DIRECTORY_SEPARATOR . $filename;
+
+    if(Storage::exists($dir)){
+      try {
+        Storage::delete($user->avatar);
+      } catch (FileNotFoundException $e) {
+      }
+    }
+    else {
+      Storage::makeDirectory($dir);
+    }
+
     $image->save(storage_path('app' . DIRECTORY_SEPARATOR . $path));
 
     // $extension = $request->file('avatar')->extension() == 'jpeg'? 'jpg': $request->file('avatar')->extension() ;
