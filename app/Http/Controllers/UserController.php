@@ -10,7 +10,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use App\Models\User;
-use App\models\DrivingLicence;
+use App\Models\DrivingLicence;
 use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
@@ -261,7 +261,7 @@ class UserController extends Controller
     }
 
     /*update email: check if uniqueness */
-    if ($request->email != $user->email) {
+    if ($request->email && $request->email != $user->email) {
       if (User::where('email', $request->email)->first()) return response()->json(['message' => 'User not updated5'], 422);
     }
 
@@ -283,7 +283,7 @@ class UserController extends Controller
     }
 
     /* update email: send verification email and also set email_verified_at to null */
-    if ($request->email != $original_email) {
+    if ($request->email && $request->email != $original_email) {
       $user->sendEmailVerificationNotification();
       $user->email_verified_at = null;
     }
