@@ -32,7 +32,6 @@ Route::post('/auth/refresh', [AuthController::class, 'refresh'])->middleware('au
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
 Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
 
-
 Route::post('/user/avatar', [UserController::class, 'setUserAvatar'])->middleware('auth');
 Route::get('/user/avatar/{id}', [UserController::class, 'getUserAvatar'])->middleware('auth');
 Route::delete('/user/avatar', [UserController::class, 'deleteUserAvatar'])->middleware('auth');
