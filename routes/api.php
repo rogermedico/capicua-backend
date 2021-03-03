@@ -29,18 +29,23 @@ Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth
 Route::post('/auth/refresh', [AuthController::class, 'refresh'])->middleware('auth');
 
 /* user */
-Route::get('/user', [UserController::class, 'user'])->middleware('auth');
-Route::get('/user/{id}', [UserController::class, 'getUserById'])->middleware('auth');
-Route::post('/user', [UserController::class, 'create'])->middleware('auth');
-Route::get('/users', [UserController::class, 'users'])->middleware('auth');
-Route::post('/user/{id}', [UserController::class, 'update'])->middleware('auth');
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');
 Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
-Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
+
 
 Route::post('/user/avatar/{id}', [UserController::class, 'setUserAvatar'])->middleware('auth');
 Route::get('/user/avatar/{id}', [UserController::class, 'getUserAvatar'])->middleware('auth');
 Route::delete('/user/avatar/{id}', [UserController::class, 'deleteUserAvatar'])->middleware('auth');
+
+Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
+
+Route::get('/user/{id}', [UserController::class, 'getUserById'])->middleware('auth');
+Route::post('/user/{id}', [UserController::class, 'updateProfile'])->middleware('auth');
+Route::get('/user', [UserController::class, 'user'])->middleware('auth');
+Route::post('/user', [UserController::class, 'create'])->middleware('auth');
+
+/* users */
+Route::get('/users', [UserController::class, 'users'])->middleware('auth');
 
 /* course */
 Route::post('/course', [CourseController::class, 'createCourse'])->middleware('auth');
@@ -68,3 +73,6 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verifyEm
 /* forgot password */
 Route::post('/password/forgot', [ForgotPasswordController::class, 'sendForgotPasswordEmail'])->middleware('guest')->name('password.request');
 Route::post('/password/reset', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.update');
+
+
+// Route::get('/testmail',[UserController::class,'testMail']);

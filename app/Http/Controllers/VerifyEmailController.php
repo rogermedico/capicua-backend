@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Verified; 
+use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
 
@@ -11,18 +12,40 @@ class VerifyEmailController extends Controller
 {
 
   public function sendVerifyEmail(Request $request){
-    auth()->user()->sendEmailVerificationNotification();
-    return response()->json(['message' => 'Verification email sent.']);
+    if(!auth()->user()->email_verified_at){
+      auth()->user()->sendEmailVerificationNotification();
+      return response()->json(['message' => 'Verification email sent.']);
+    }
+    else {
+      return response()->json(['message' => 'Verification email not sent.'],400);
+    }
+
+    
   }
 
   public function verifyEmail(Request $request){
-    $user = User::find($request->route('id'));
+
+    $params = [
+      'id' => $request->route('id'),
+      'hash' => $request->route('hash')
+    ];
+
+    $validator = Validator::make($params, [
+      'id' => 'required|integer|exists:users,id',
+      'hash' => 'required|string',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $user = User::find($params['id']);
 
     if($user->deactivated){
       return response()->json(['message' => 'Email not verified.'],400);
     }
 
-    if (!hash_equals((string) $request->route('hash'), sha1($user->getEmailForVerification()))) {
+    if (!hash_equals((string) $params['hash'], sha1($user->getEmailForVerification()))) {
         throw new AuthorizationException;
     }
 

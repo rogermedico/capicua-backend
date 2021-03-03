@@ -4,16 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset; 
+use App\Models\User;
 
 class ForgotPasswordController extends Controller
 {
 
   public function sendForgotPasswordEmail(Request $request){
-    $request->validate(['email' => 'required|email']);
+    // $request->validate(['email' => 'required|email']);
 
-    if(User::where('email',$request->email)->value('deactivated')){
+    $validator = Validator::make($request->all(), [
+      'email' => 'required|string|email|max:100|exists:users,email',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $user = User::where('email',$request->email)->first();
+
+    if($user->deactivated){
       return response()->json(['message' => 'Reset password email not sent.'],400);
     }
 
@@ -30,13 +42,20 @@ class ForgotPasswordController extends Controller
   }
 
   public function passwordReset(Request $request){
-    $request->validate([
-      'token' => 'required',
-      'email' => 'required|email',
+
+    $validator = Validator::make($request->all(), [
+      'token' => 'required|string',
+      'email' => 'required|string|email|max:100|exists:users,email',
       'password' => 'required|min:8|confirmed',
     ]);
 
-    if(User::where('email',$request->email)->value('deactivated')){
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+    
+    $user = User::where('email',$request->email)->first();
+
+    if($user->deactivated){
       return response()->json(['message' => 'Password not updated.'],400);
     }
 

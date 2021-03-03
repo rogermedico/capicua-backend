@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Contracts\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Carbon;
@@ -17,6 +18,8 @@ use App\Models\Language;
 use App\Notifications\CustomNewUserNotification;
 
 use Illuminate\Support\Facades\Validator;
+
+use App\Mail\TestMail;
 
 class UserController extends Controller
 {
@@ -211,7 +214,7 @@ class UserController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, $id)
+  public function updateProfile(Request $request, $id)
   {
 
     $request->validate([
@@ -457,4 +460,20 @@ class UserController extends Controller
 
     return response()->json(null, 200);
   }
+
+  public function testMail(){
+    $asdf = Mail::raw('This is a test e-mail', function ($message) {
+      $message->from('noreply@magdapb.com','roger');
+      $message->to("pop135@gmail.com",'roger');
+      $message->subject("hi checking");
+      $message->getSwiftMessage();
+    });
+
+    // $asdf = Mail::to('pop135@gmail.com')->send(new TestMail());
+
+    //   dd(Mail::failures());
+
+    return response()->json($asdf, 401);
+  }
+
 }

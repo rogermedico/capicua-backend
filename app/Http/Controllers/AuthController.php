@@ -78,11 +78,11 @@ class AuthController extends Controller
         }
 
         if(User::where('email',$request->email)->value('deactivated')){
-          return response()->json(['error' => 'Unauthorized'], 401);
+          return response()->json(['error' => 'Unauthorized1'], 401);
         }
 
         if (!$token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized2'], 401);
         }
 
         return $this->createNewToken($token);

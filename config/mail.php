@@ -59,7 +59,8 @@ return [
 
         'sendmail' => [
             'transport' => 'sendmail',
-            'path' => '/usr/sbin/sendmail -bs',
+            // 'path' => '/usr/sbin/sendmail -bs',
+            'path' => '/usr/sbin/sendmail -t -i',
         ],
 
         'log' => [
@@ -106,5 +107,15 @@ return [
             resource_path('views/vendor/mail'),
         ],
     ],
+
+
+    /* ErrorException stream_socket_enable_crypto(): Peer certificate CN=`*.securemail.pro' did not match expected CN=`authsmtp.magdapb.com' */
+    'stream' => [
+      'ssl' => [
+          'verify_peer' => false,
+          'verify_peer_name' => false,
+          'allow_self_signed' => true,
+      ],
+  ],
 
 ];
