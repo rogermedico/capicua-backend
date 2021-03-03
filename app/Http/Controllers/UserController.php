@@ -221,47 +221,53 @@ class UserController extends Controller
       'name' => 'sometimes|required|string|between:2,100',
       'surname' => 'sometimes|required|string|between:2,100',
       'email' => 'sometimes|required|string|email|max:100',
-      'user_type_id' => 'sometimes|required|integer|exists:user_types,id',
+      // 'user_type_id' => 'sometimes|required|integer|exists:user_types,id',
       'dni' => 'nullable|string',
       'birth_date' => 'nullable|date',
-      'actual_position' => 'nullable|string',
+      // 'actual_position' => 'nullable|string',
       'address_street' => 'nullable|string',
       'address_number' => 'nullable|string',
       'address_city' => 'nullable|string',
       'address_cp' => 'nullable|string',
       'address_country' => 'nullable|string',
       'phone' => 'nullable|string',
-      'deactivated' => 'nullable|boolean',
+      // 'deactivated' => 'nullable|boolean',
       'driving_licences' => 'nullable|string',
     ]);
 
-    $user = User::find($id);
-    $author_rank = auth()->user()->userType->rank;
-    $updated_user_rank = UserType::find($user->user_type_id)->rank;
+    $user = auth()->user();
+
+    if($user->id != $id) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    // $user = User::find($id);
+    // $author_rank = auth()->user()->userType->rank;
+    // $updated_user_rank = UserType::find($user->user_type_id)->rank;
 
 
-    /* update password, email_verified_at or avatar: always forbidden */
-    if ($request->password || $request->email_verified_at || $request->avatar) {
+    /* update password, email_verified_at, user_type_id or avatar: always forbidden */
+    if ($request->password || $request->email_verified_at || $request->avatar || $request->user_type_id || $request->deactivated) {
       return response()->json(['message' => 'User not updated1'], 422);
     }
 
     /* update user_type_id: forbidden if author_rank >= updated user rank  */
-    if ($request->user_type_id) {
-      $updated_user_new_rank = UserType::find($request->user_type_id)->rank;
-      if (($author_rank >= $updated_user_rank) && ($author_rank == 1 && $updated_user_rank == 1 && $updated_user_new_rank != 1)) {
-        return response()->json(['message' => 'User not updated2'], 422);
-      }
-    };
+    // if ($request->user_type_id) {
+    //   $updated_user_new_rank = UserType::find($request->user_type_id)->rank;
+    //   if (($author_rank >= $updated_user_rank) && ($author_rank == 1 && $updated_user_rank == 1 && $updated_user_new_rank != 1)) {
+    //     return response()->json(['message' => 'User not updated2'], 422);
+    //   }
+    // };
 
     /* update deactivated: forbidden if updated user is admin and author_rank >= updated user */
-    if ($request->deactivated && ($author_rank >= $updated_user_rank || $updated_user_rank == 1)) {
-      return response()->json(['message' => 'User not updated3'], 422);
-    };
+    // if ($request->deactivated && ($author_rank >= $updated_user_rank || $updated_user_rank == 1)) {
+    //   return response()->json(['message' => 'User not updated3'], 422);
+    // };
 
     /* update other fields: forbidden if author_rank >= updated_user_rank or author_rank is not admin (admin updating his/her own fields) */
-    if ($author_rank >= $updated_user_rank && $author_rank != 1) {
-      return response()->json(['message' => 'User not updated4'], 422);
-    }
+    // if ($author_rank >= $updated_user_rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'User not updated4'], 422);
+    // }
 
     /*update email: check if uniqueness */
     if ($request->email && $request->email != $user->email) {
@@ -292,8 +298,16 @@ class UserController extends Controller
     }
 
     $user->save();
+    $avatar_path = $user->avatar;
+    $user = $this->customizeFields($user);
+    if ($user->avatar) {
+      $user->avatar = [
+        'avatar' => base64_encode(Storage::get($avatar_path)),
+        'extension' => pathinfo(storage_path() . $avatar_path, PATHINFO_EXTENSION)
+      ];
+    };
 
-    return response()->json($this->customizeFields($user));
+    return response()->json($user);
   }
 
   /**
