@@ -19,7 +19,6 @@ class EducationController extends Controller
 
   public function createEducation(Request $request) {
     $validator = Validator::make($request->all(), [
-      'user_id' => 'required|integer|exists:users,id',
       'name' => 'required|string|between:2,100',
       'finish_date' => 'nullable|date',
       'finished' => 'nullable|boolean'
@@ -28,15 +27,17 @@ class EducationController extends Controller
     if($validator->fails()){
         return response()->json($validator->errors()->toJson(), 400);
     }
-
-    $user = User::find($request->get('user_id'));
-    $author_rank = auth()->user()->userType->rank;
-    if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-      return response()->json(['message' => 'Unauthorized'],401);
-    }
+    $user = auth()->user();
+    // $user = User::find($request->get('user_id'));
+    // $author_rank = auth()->user()->userType->rank;
+    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'],401);
+    // }
 
     try {
-      $education = Education::create(array_merge($validator->validated()));
+      $education = Education::create(array_merge($validator->validated(),
+      ['user_id' => $user->id]
+    ));
     } catch(QueryException $e){
       return response()->json(['message' => 'Education not created'], 422);
     }
@@ -60,11 +61,17 @@ class EducationController extends Controller
     }
 
     $education = Education::find($request->get('id'));
-    $user = User::find($education['user_id']);
-    $author_rank = auth()->user()->userType->rank;
-    if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    $user = auth()->user();
+
+    if($education->user_id != $user->id){
       return response()->json(['message' => 'Unauthorized'],401);
     }
+
+    // $user = User::find($education['user_id']);
+    // $author_rank = auth()->user()->userType->rank;
+    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'],401);
+    // }
 
     if( $education) {
       try {
@@ -147,11 +154,15 @@ class EducationController extends Controller
     }
 
     $education = Education::find($education_id);
-    $user = User::find($education['user_id']);
-    $author_rank = auth()->user()->userType->rank;
-    if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    $user = auth()->user();
+    if($education->user_id != $user->id){
       return response()->json(['message' => 'Unauthorized'],401);
     }
+    // $user = User::find($education['user_id']);
+    // $author_rank = auth()->user()->userType->rank;
+    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'],401);
+    // }
 
     $education->delete();
     return response()->json(null, 204);

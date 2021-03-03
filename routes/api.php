@@ -33,14 +33,14 @@ Route::post('/user/password', [UserController::class, 'changePassword'])->middle
 Route::post('/user/password/check', [UserController::class, 'checkPassword'])->middleware('auth');
 
 
-Route::post('/user/avatar/{id}', [UserController::class, 'setUserAvatar'])->middleware('auth');
+Route::post('/user/avatar', [UserController::class, 'setUserAvatar'])->middleware('auth');
 Route::get('/user/avatar/{id}', [UserController::class, 'getUserAvatar'])->middleware('auth');
-Route::delete('/user/avatar/{id}', [UserController::class, 'deleteUserAvatar'])->middleware('auth');
+Route::delete('/user/avatar', [UserController::class, 'deleteUserAvatar'])->middleware('auth');
 
 Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
 
 Route::get('/user/{id}', [UserController::class, 'getUserById'])->middleware('auth');
-Route::post('/user/{id}', [UserController::class, 'updateProfile'])->middleware('auth');
+Route::put('/user', [UserController::class, 'updateProfile'])->middleware('auth');
 Route::get('/user', [UserController::class, 'user'])->middleware('auth');
 Route::post('/user', [UserController::class, 'create'])->middleware('auth');
 
@@ -50,7 +50,7 @@ Route::get('/users', [UserController::class, 'users'])->middleware('auth');
 /* course */
 Route::post('/course', [CourseController::class, 'createCourse'])->middleware('auth');
 Route::put('/course', [CourseController::class, 'updateCourse'])->middleware('auth');
-Route::delete('/course/{user_id}/{course_id}', [CourseController::class, 'deleteCourse'])->middleware('auth');
+Route::delete('/course/{course_id}', [CourseController::class, 'deleteCourse'])->middleware('auth');
 
 /* education */
 Route::post('/education', [EducationController::class, 'createEducation'])->middleware('auth');

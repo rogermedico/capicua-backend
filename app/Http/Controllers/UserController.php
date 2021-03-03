@@ -214,7 +214,7 @@ class UserController extends Controller
    * @param  int  $id
    * @return \Illuminate\Http\Response
    */
-  public function updateProfile(Request $request, $id)
+  public function updateProfile(Request $request)
   {
 
     $request->validate([
@@ -237,9 +237,9 @@ class UserController extends Controller
 
     $user = auth()->user();
 
-    if($user->id != $id) {
-      return response()->json(['message' => 'Unauthorized'], 401);
-    }
+    // if($user->id != $id) {
+    //   return response()->json(['message' => 'Unauthorized'], 401);
+    // }
 
     // $user = User::find($id);
     // $author_rank = auth()->user()->userType->rank;
@@ -371,18 +371,20 @@ class UserController extends Controller
     }
   }
 
-  public function setUserAvatar(Request $request, $id)
+  public function setUserAvatar(Request $request)
   {
 
-    $user = User::find($id);
-    if (!$user) {
-      return response()->json(['message' => 'Avatar not updated'], 422);
-    }
+    // $user = User::find($id);
+    // if (!$user) {
+    //   return response()->json(['message' => 'Avatar not updated'], 422);
+    // }
 
-    $author_rank = auth()->user()->userType->rank;
-    if ($author_rank >= $user->userType->rank && $author_rank != 1) {
-      return response()->json(['message' => 'Unauthorized'], 401);
-    }
+    $user = auth()->user();
+
+    // $author_rank = auth()->user()->userType->rank;
+    // if ($author_rank >= $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'], 401);
+    // }
 
     $validator = Validator::make($request->all(), [
       'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2000',
@@ -397,7 +399,7 @@ class UserController extends Controller
       $constraint->upsize();
     });
     $filename = 'avatar.jpg';
-    $dir = 'avatars' . DIRECTORY_SEPARATOR . $id;
+    $dir = 'avatars' . DIRECTORY_SEPARATOR . $user->id;
     $path = $dir . DIRECTORY_SEPARATOR . $filename;
 
     if(Storage::exists($dir)){
@@ -455,18 +457,19 @@ class UserController extends Controller
     ], 200);
   }
 
-  public function deleteUserAvatar($id)
+  public function deleteUserAvatar()
   {
 
-    $user = User::find($id);
-    if (!$user) {
-      return response()->json(['message' => 'User not found'], 422);
-    }
+    $user = auth()->user();
+    // $user = User::find($id);
+    // if (!$user) {
+    //   return response()->json(['message' => 'User not found'], 422);
+    // }
 
-    $author_rank = auth()->user()->userType->rank;
-    if ($author_rank > $user->userType->rank && $author_rank != 1) {
-      return response()->json(['message' => 'Unauthorized'], 401);
-    }
+    // $author_rank = auth()->user()->userType->rank;
+    // if ($author_rank > $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'], 401);
+    // }
 
     Storage::delete($user->avatar);
     $user->avatar = null;

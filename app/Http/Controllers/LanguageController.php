@@ -18,7 +18,6 @@ class LanguageController extends Controller
 
   public function createLanguage(Request $request) {
     $validator = Validator::make($request->all(), [
-      'user_id' => 'required|integer|exists:users,id',
       'name' => 'required|string|between:2,100',
       'level' => 'required|string',
       'finish_date' => 'nullable|date',
@@ -28,14 +27,17 @@ class LanguageController extends Controller
         return response()->json($validator->errors()->toJson(), 400);
     }
 
-    $user = User::find($request->get('user_id'));
-    $author_rank = auth()->user()->userType->rank;
-    if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-      return response()->json(['message' => 'Unauthorized'],401);
-    }
+    $user = auth()->user();
+    // $user = User::find($request->get('user_id'));
+    // $author_rank = auth()->user()->userType->rank;
+    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'],401);
+    // }
 
     try {
-      $language = Language::create(array_merge($validator->validated()));
+      $language = Language::create(array_merge($validator->validated(),
+        ['user_id' => $user->id]
+      ));
     } catch(QueryException $e){
       return response()->json(['message' => 'Language not created'], 422);
     }
@@ -59,9 +61,14 @@ class LanguageController extends Controller
     }
 
     $language = Language::find($request->get('id'));
-    $user = User::find($language['user_id']);
-    $author_rank = auth()->user()->userType->rank;
-    if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    // $user = User::find($language['user_id']);
+    // $author_rank = auth()->user()->userType->rank;
+    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'],401);
+    // }
+    $user = auth()->user();
+
+    if($language->user_id != $user->id){
       return response()->json(['message' => 'Unauthorized'],401);
     }
 
@@ -101,9 +108,13 @@ class LanguageController extends Controller
     }
 
     $language = Language::find($language_id);
-    $user = User::find($language['user_id']);
-    $author_rank = auth()->user()->userType->rank;
-    if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    // $user = User::find($language['user_id']);
+    // $author_rank = auth()->user()->userType->rank;
+    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
+    //   return response()->json(['message' => 'Unauthorized'],401);
+    // }
+    $user = auth()->user();
+    if($language->user_id != $user->id){
       return response()->json(['message' => 'Unauthorized'],401);
     }
 
