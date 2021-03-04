@@ -36,7 +36,9 @@ Route::post('/user/avatar', [UserController::class, 'setUserAvatar'])->middlewar
 Route::get('/user/avatar/{id}', [UserController::class, 'getUserAvatar'])->middleware('auth');
 Route::delete('/user/avatar', [UserController::class, 'deleteUserAvatar'])->middleware('auth');
 
-Route::post('/user/delete/{id}', [UserController::class, 'delete'])->middleware('auth');
+Route::post('/user/activate', [UserController::class, 'activate'])->middleware('auth');
+Route::post('/user/deactivate', [UserController::class, 'deactivate'])->middleware('auth');
+Route::delete('/user/{user_id}', [UserController::class, 'delete'])->middleware('auth');
 
 Route::get('/user/{id}', [UserController::class, 'getUserById'])->middleware('auth');
 Route::put('/user', [UserController::class, 'updateProfile'])->middleware('auth');

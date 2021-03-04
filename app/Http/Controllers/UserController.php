@@ -481,19 +481,83 @@ class UserController extends Controller
     return response()->json(null, 200);
   }
 
-  public function testMail(){
-    $asdf = Mail::raw('This is a test e-mail', function ($message) {
-      $message->from('noreply@magdapb.com','roger');
-      $message->to("pop135@gmail.com",'roger');
-      $message->subject("hi checking");
-      $message->getSwiftMessage();
-    });
+  public function activate(Request $request){
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'required|integer|exists:users,id',
+    ]);
 
-    // $asdf = Mail::to('pop135@gmail.com')->send(new TestMail());
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
 
-    //   dd(Mail::failures());
+    $user = User::find($validator->valid()['user_id']);
+    $author_user_rank = auth()->user()->userType->rank;
+    $objective_user_rank = UserType::find($user->user_type_id)->rank;
+    
+    /* update deactivated: forbidden if updated user is admin and author_rank >= updated user */
+    if ($author_user_rank >= $objective_user_rank || $objective_user_rank == 1) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+    else{
+      $user->deactivated = false;
+      $user->save();
+      return response()->json(['message' => 'User activated'], 200);
+    };
 
-    return response()->json($asdf, 401);
+  }
+
+  public function deactivate(Request $request){
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'required|integer|exists:users,id',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $user = User::find($validator->valid()['user_id']);
+    $author_user_rank = auth()->user()->userType->rank;
+    $objective_user_rank = UserType::find($user->user_type_id)->rank;
+    
+    /* update deactivated: forbidden if updated user is admin and author_rank >= updated user */
+    if ($author_user_rank >= $objective_user_rank || $objective_user_rank == 1) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+    else{
+      $user->deactivated = true;
+      $user->save();
+      return response()->json(['message' => 'User deactivated'], 200);
+    };
+
+  }
+
+  public function delete($user_id){
+
+    $params = [
+      'user_id' => $user_id
+    ];
+
+    $validator = Validator::make($params, [
+      'user_id' => 'required|integer|exists:users,id',
+    ]);
+
+    if($validator->fails()){
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $user = User::find($validator->valid()['user_id']);
+    $author_user_rank = auth()->user()->userType->rank;
+    $objective_user_rank = UserType::find($user->user_type_id)->rank;
+    
+    /* update deactivated: forbidden if updated user is admin and author_rank >= updated user */
+    if ($author_user_rank >= $objective_user_rank || $objective_user_rank == 1) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+    else{
+      $user->delete();
+      return response()->json(['message' => 'User deleted'], 200);
+    };
+
   }
 
 }
