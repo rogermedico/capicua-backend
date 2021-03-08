@@ -47,6 +47,7 @@ Route::post('/user', [UserController::class, 'create'])->middleware('auth');
 
 /* users */
 Route::get('/users', [UserController::class, 'users'])->middleware('auth');
+Route::put('/users', [UserController::class,'editUser'])->middleware('auth');
 
 /* course */
 Route::post('/course', [CourseController::class, 'createCourse'])->middleware('auth');

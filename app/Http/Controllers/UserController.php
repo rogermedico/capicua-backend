@@ -313,6 +313,38 @@ class UserController extends Controller
     return response()->json($user);
   }
 
+  public function editUser(Request $request)
+  {
+
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'required|integer|exists:users,id',
+      'user_type_id' => 'sometimes|required|integer|exists:user_types,id',
+      'actual_position' => 'nullable|string',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $validated_data = $validator->valid();
+
+    $user = User::find($validated_data['user_id']);
+    $author_user_rank = auth()->user()->userType->rank;
+    $objective_user_rank = UserType::find($user->user_type_id)->rank;
+
+    /* update user_type_id: forbidden if author_rank >= updated user rank  */
+    if (array_key_exists('user_type_id',$validated_data)) {
+      $objective_user_new_rank = UserType::find($validated_data['user_type_id'])->rank;
+      if (($author_user_rank >= $objective_user_rank) && ($author_user_rank == 1 && $objective_user_rank == 1 && $objective_user_new_rank != 1)) {
+        return response()->json(['message' => 'User not updated2'], 422);
+      }
+    };
+
+      $user->fill($validated_data);
+      $user->save();
+      return response()->json($this->customizeFields($user), 200);
+  }
+
   /**
    * Register a User.
    *
