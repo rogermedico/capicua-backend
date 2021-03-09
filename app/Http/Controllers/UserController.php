@@ -434,7 +434,7 @@ class UserController extends Controller
       $constraint->upsize();
     });
     $filename = 'avatar.jpg';
-    $dir = 'avatars' . DIRECTORY_SEPARATOR . $user->id;
+    $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
     $path = $dir . DIRECTORY_SEPARATOR . $filename;
 
     if(Storage::exists($dir)){
@@ -586,7 +586,12 @@ class UserController extends Controller
       return response()->json(['message' => 'Unauthorized'], 401);
     }
     else{
+      $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
+      if(Storage::exists($dir)){
+          Storage::deleteDirectory($dir);
+      }
       $user->delete();
+
       return response()->json(['message' => 'User deleted'], 200);
     };
 
