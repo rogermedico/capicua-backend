@@ -58,8 +58,16 @@ class UserController extends Controller
     $user->languages = Language::where('user_id', $user->id)->get();
 
     /* avatar */
-    if ($user->avatar) $user->avatar = true; //base64_encode(Storage::get($user->avatar));
-    else $user->avatar = false;
+    if ($user->avatar_path) $user->avatar_file = true; //base64_encode(Storage::get($user->avatar_file));
+    else $user->avatar_file = false;
+
+    /* dni */
+    if ($user->dni_path) $user->dni_file = true; //base64_encode(Storage::get($user->avatar_file));
+    else $user->dni_file = false;
+
+    /* sex_offense_certificate */
+    if ($user->sex_offense_certificate_path) $user->sex_offense_certificate_file = true; //base64_encode(Storage::get($user->avatar_file));
+    else $user->sex_offense_certificate_file = false;
 
     return $user;
   }
@@ -74,10 +82,10 @@ class UserController extends Controller
    */
   public function user()
   {
-    $avatar_path = auth()->user()->avatar;
+    $avatar_path = auth()->user()->avatar_path;
     $user = $this->customizeFields(auth()->user());
-    if ($user->avatar) {
-      $user->avatar = [
+    if ($user->avatar_file) {
+      $user->avatar_file = [
         'avatar' => base64_encode(Storage::get($avatar_path)),
         'extension' => pathinfo(storage_path() . $avatar_path, PATHINFO_EXTENSION)
       ];
@@ -105,10 +113,10 @@ class UserController extends Controller
       $minimum_rank != $author_rank ||
       auth()->user()->id == $id
     ) {
-      $avatar_path = $user->avatar;
+      $avatar_path = $user->avatar_path;
       $user = $this->customizeFields($user);
-      if ($user->avatar) {
-        $user->avatar = [
+      if ($user->avatar_file) {
+        $user->avatar_file = [
           'avatar' => base64_encode(Storage::get($avatar_path)),
           'extension' => pathinfo(storage_path() . $avatar_path, PATHINFO_EXTENSION)
         ];
@@ -250,7 +258,7 @@ class UserController extends Controller
 
 
     /* update password, email_verified_at, user_type_id or avatar: always forbidden */
-    if ($request->password || $request->email_verified_at || $request->avatar || $request->user_type_id || $request->deactivated) {
+    if ($request->password || $request->email_verified_at || $request->avatar_path || $request->user_type_id || $request->deactivated) {
       return response()->json(['message' => 'User not updated1'], 422);
     }
 
@@ -301,10 +309,10 @@ class UserController extends Controller
     }
 
     $user->save();
-    $avatar_path = $user->avatar;
+    $avatar_path = $user->avatar_path;
     $user = $this->customizeFields($user);
-    if ($user->avatar) {
-      $user->avatar = [
+    if ($user->avatar_file) {
+      $user->avatar_file = [
         'avatar' => base64_encode(Storage::get($avatar_path)),
         'extension' => pathinfo(storage_path() . $avatar_path, PATHINFO_EXTENSION)
       ];
@@ -439,7 +447,7 @@ class UserController extends Controller
 
     if(Storage::exists($dir)){
       try {
-        Storage::delete($user->avatar);
+        Storage::delete($user->avatar_path);
       } catch (FileNotFoundException $e) {
       }
     }
@@ -457,12 +465,12 @@ class UserController extends Controller
 
 
 
-    $user->avatar = $path;
+    $user->avatar_path = $path;
     $user->save();
 
     return response()->json([
-      'avatar' => base64_encode(Storage::get($user->avatar)),
-      'extension' => pathinfo(storage_path() . $user->avatar, PATHINFO_EXTENSION)
+      'avatar' => base64_encode(Storage::get($user->avatar_path)),
+      'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
     ], 200);
   }
 
@@ -480,7 +488,7 @@ class UserController extends Controller
     }
 
     try {
-      $file = Storage::get($user->avatar);
+      $file = Storage::get($user->avatar_path);
     } catch (FileNotFoundException $e) {
       return response()->json(['message' => 'Avatar not found'], 422);
     }
@@ -488,7 +496,7 @@ class UserController extends Controller
 
     return response()->json([
       'avatar' => base64_encode($file),
-      'extension' => pathinfo(storage_path() . $user->avatar, PATHINFO_EXTENSION)
+      'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
     ], 200);
   }
 
@@ -506,8 +514,8 @@ class UserController extends Controller
     //   return response()->json(['message' => 'Unauthorized'], 401);
     // }
 
-    Storage::delete($user->avatar);
-    $user->avatar = null;
+    Storage::delete($user->avatar_path);
+    $user->avatar_path = null;
     $user->save();
 
     return response()->json(null, 200);
@@ -596,5 +604,169 @@ class UserController extends Controller
     };
 
   }
+
+  public function setUserDni(Request $request)
+  {
+
+    $user = auth()->user();
+
+    $validator = Validator::make($request->all(), [
+      'dni' => 'required|mimetypes:application/pdf|max:10000',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $dni = $validator->valid()['dni'];
+    $filename = 'dni.pdf';
+    $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
+    $path = $dir . DIRECTORY_SEPARATOR . $filename;
+
+    /* avoid windows/linux conflict */
+    $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
+    $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
+
+    if(Storage::exists($dir)){
+      try {
+        Storage::delete($user->dni_path);
+      } catch (FileNotFoundException $e) {
+      }
+    }
+    else {
+      Storage::makeDirectory($dir);
+    }
+
+    $dni->storeAs($dir,$filename);
+
+    $user->dni_path = $path;
+    $user->save();
+
+    return response()->json([
+      'message' => 'Dni upload successfully'
+      // 'avatar' => base64_encode(Storage::get($user->avatar_path)),
+      // 'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
+    ], 200);
+  }
+
+  public function getUserDni($id)
+  {
+
+    $user = User::find($id);
+    if (!$user) {
+      return response()->json(['message' => 'User not found'], 422);
+    }
+
+    $author_rank = auth()->user()->userType->rank;
+    if (($author_rank > $user->userType->rank && $author_rank != 1) || $user->id != auth()->user()->id) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    try {
+      $file = Storage::get($user->dni_path);
+    } catch (FileNotFoundException $e) {
+      return response()->json(['message' => 'Dni not found'], 422);
+    }
+
+
+    return response()->json([
+      'dni' => base64_encode($file),
+      'extension' => pathinfo(storage_path() . $user->dni_path, PATHINFO_EXTENSION)
+    ], 200);
+  }
+
+  public function deleteUserDni()
+  {
+
+    $user = auth()->user();
+
+    Storage::delete($user->dni_path);
+    $user->dni_path = null;
+    $user->save();
+
+  }
+
+  public function setUserOffenses(Request $request)
+  {
+
+    $user = auth()->user();
+
+    $validator = Validator::make($request->all(), [
+      'offenses' => 'required|mimetypes:application/pdf|max:10000',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $offenses = $validator->valid()['offenses'];
+    $filename = 'offenses.pdf';
+    $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
+    $path = $dir . DIRECTORY_SEPARATOR . $filename;
+
+    /* avoid windows/linux conflict */
+    $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
+    $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
+
+    if(Storage::exists($dir)){
+      try {
+        Storage::delete($user->sex_offence_certificate_path);
+      } catch (FileNotFoundException $e) {
+      }
+    }
+    else {
+      Storage::makeDirectory($dir);
+    }
+
+    $dni->storeAs($dir,$filename);
+
+    $user->sex_offence_certificate_path_path = $path;
+    $user->save();
+
+    return response()->json([
+      'message' => 'Offenses uploaded successfully'
+      // 'avatar' => base64_encode(Storage::get($user->avatar_path)),
+      // 'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
+    ], 200);
+  }
+
+  public function getUserOffenses($id)
+  {
+
+    $user = User::find($id);
+    if (!$user) {
+      return response()->json(['message' => 'User not found'], 422);
+    }
+
+    $author_rank = auth()->user()->userType->rank;
+    if (($author_rank > $user->userType->rank && $author_rank != 1) || $user->id != auth()->user()->id) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    try {
+      $file = Storage::get($user->sex_offence_certificate_path);
+    } catch (FileNotFoundException $e) {
+      return response()->json(['message' => 'Dni not found'], 422);
+    }
+
+
+    return response()->json([
+      'dni' => base64_encode($file),
+      'extension' => pathinfo(storage_path() . $user->sex_offence_certificate_path, PATHINFO_EXTENSION)
+    ], 200);
+  }
+
+  public function deleteUserOffenses()
+  {
+
+    $user = auth()->user();
+
+    Storage::delete($user->sex_offence_certificate_path);
+    $user->sex_offence_certificate_path = null;
+    $user->save();
+
+  }
+
+
 
 }

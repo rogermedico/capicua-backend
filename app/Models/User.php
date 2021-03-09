@@ -36,7 +36,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'dni',
         'user_type_id',
         'deactivated',
-        'avatar'
+        'avatar_path',
+        'dni_path',
+        'sex_offence_certificate_path'
     ];
 
     /**
@@ -48,6 +50,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'password',
         'remember_token',
         'pivot',
+        'avatar_path',
+        'dni_path',
+        'sex_offence_certificate_path',
         'created_at',
         'updated_at'
     ];

@@ -36,6 +36,14 @@ Route::post('/user/avatar', [UserController::class, 'setUserAvatar'])->middlewar
 Route::get('/user/avatar/{id}', [UserController::class, 'getUserAvatar'])->middleware('auth');
 Route::delete('/user/avatar', [UserController::class, 'deleteUserAvatar'])->middleware('auth');
 
+Route::post('/user/dni', [UserController::class, 'setUserDni'])->middleware('auth');
+Route::get('/user/dni/{id}', [UserController::class, 'getUserDni'])->middleware('auth');
+Route::delete('/user/dni', [UserController::class, 'deleteUserDni'])->middleware('auth');
+
+Route::post('/user/offences', [UserController::class, 'setUserOffenses'])->middleware('auth');
+Route::get('/user/offences/{id}', [UserController::class, 'getUserOffenses'])->middleware('auth');
+Route::delete('/user/offences', [UserController::class, 'deleteUserOffenses'])->middleware('auth');
+
 Route::post('/user/activate', [UserController::class, 'activate'])->middleware('auth');
 Route::post('/user/deactivate', [UserController::class, 'deactivate'])->middleware('auth');
 Route::delete('/user/{user_id}', [UserController::class, 'delete'])->middleware('auth');
@@ -75,6 +83,3 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verifyEm
 /* forgot password */
 Route::post('/password/forgot', [ForgotPasswordController::class, 'sendForgotPasswordEmail'])->middleware('guest')->name('password.request');
 Route::post('/password/reset', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.update');
-
-
-// Route::get('/testmail',[UserController::class,'testMail']);
