@@ -40,9 +40,9 @@ Route::post('/user/dni', [UserController::class, 'setUserDni'])->middleware('aut
 Route::get('/user/dni/{id}', [UserController::class, 'getUserDni'])->middleware('auth');
 Route::delete('/user/dni', [UserController::class, 'deleteUserDni'])->middleware('auth');
 
-Route::post('/user/offences', [UserController::class, 'setUserOffenses'])->middleware('auth');
-Route::get('/user/offences/{id}', [UserController::class, 'getUserOffenses'])->middleware('auth');
-Route::delete('/user/offences', [UserController::class, 'deleteUserOffenses'])->middleware('auth');
+Route::post('/user/offenses', [UserController::class, 'setUserOffenses'])->middleware('auth');
+Route::get('/user/offenses/{id}', [UserController::class, 'getUserOffenses'])->middleware('auth');
+Route::delete('/user/offenses', [UserController::class, 'deleteUserOffenses'])->middleware('auth');
 
 Route::post('/user/activate', [UserController::class, 'activate'])->middleware('auth');
 Route::post('/user/deactivate', [UserController::class, 'deactivate'])->middleware('auth');

@@ -710,7 +710,7 @@ class UserController extends Controller
 
     if(Storage::exists($dir)){
       try {
-        Storage::delete($user->sex_offence_certificate_path);
+        Storage::delete($user->sex_offense_certificate_path);
       } catch (FileNotFoundException $e) {
       }
     }
@@ -718,9 +718,9 @@ class UserController extends Controller
       Storage::makeDirectory($dir);
     }
 
-    $dni->storeAs($dir,$filename);
+    $offenses->storeAs($dir,$filename);
 
-    $user->sex_offence_certificate_path_path = $path;
+    $user->sex_offense_certificate_path = $path;
     $user->save();
 
     return response()->json([
@@ -744,15 +744,15 @@ class UserController extends Controller
     }
 
     try {
-      $file = Storage::get($user->sex_offence_certificate_path);
+      $file = Storage::get($user->sex_offense_certificate_path);
     } catch (FileNotFoundException $e) {
-      return response()->json(['message' => 'Dni not found'], 422);
+      return response()->json(['message' => 'Offenses not found'], 422);
     }
 
 
     return response()->json([
-      'dni' => base64_encode($file),
-      'extension' => pathinfo(storage_path() . $user->sex_offence_certificate_path, PATHINFO_EXTENSION)
+      'offenses' => base64_encode($file),
+      'extension' => pathinfo(storage_path() . $user->sex_offense_certificate_path, PATHINFO_EXTENSION)
     ], 200);
   }
 
@@ -761,8 +761,8 @@ class UserController extends Controller
 
     $user = auth()->user();
 
-    Storage::delete($user->sex_offence_certificate_path);
-    $user->sex_offence_certificate_path = null;
+    Storage::delete($user->sex_offense_certificate_path);
+    $user->sex_offense_certificate_path = null;
     $user->save();
 
   }
