@@ -658,7 +658,7 @@ class UserController extends Controller
     }
 
     $author_rank = auth()->user()->userType->rank;
-    if (($author_rank > $user->userType->rank && $author_rank != 1) || $user->id != auth()->user()->id) {
+    if ($author_rank > $user->userType->rank && $author_rank != 1 && $user->id != auth()->user()->id) {
       return response()->json(['message' => 'Unauthorized'], 401);
     }
 
@@ -739,7 +739,7 @@ class UserController extends Controller
     }
 
     $author_rank = auth()->user()->userType->rank;
-    if (($author_rank > $user->userType->rank && $author_rank != 1) || $user->id != auth()->user()->id) {
+    if ($author_rank > $user->userType->rank && $author_rank != 1 && $user->id != auth()->user()->id) {
       return response()->json(['message' => 'Unauthorized'], 401);
     }
 
