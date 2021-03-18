@@ -26,7 +26,7 @@ use App\Http\Controllers\LanguageController;
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('auth');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth');
-Route::post('/auth/refresh', [AuthController::class, 'refresh'])->middleware('auth');
+Route::get('/auth/refresh', [AuthController::class, 'refresh'])->middleware('auth');
 
 /* user */
 Route::post('/user/password', [UserController::class, 'changePassword'])->middleware('auth');

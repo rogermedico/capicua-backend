@@ -15,6 +15,7 @@ use App\Models\User;
 // use App\Models\Education;
 // use App\Models\Language;
 // use App\Mail\VerifyEmail;
+// use Illuminate\Support\Carbon;
 use Validator;
 
 class AuthController extends Controller
@@ -127,7 +128,7 @@ class AuthController extends Controller
         return response()->json([
             'accessToken' => $token,
             'tokenType' => 'bearer',
-            'expiresIn' => auth()->factory()->getTTL() * 60,
+            'expiresIn' => 305,//auth()->factory()->getTTL() * 60,
             'username' => auth()->user()->email,
             'emailVerified' => auth()->user()->hasVerifiedEmail()
         ]);
