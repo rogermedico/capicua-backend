@@ -98,6 +98,12 @@ class PersonalDocumentsController extends Controller
      */
     public function deletePersonalDocument($id)
     {
-        //
+
+        // $user = auth()->user();
+    
+        // Storage::delete($user->sex_offense_certificate_path);
+        // $user->sex_offense_certificate_path = null;
+        // $user->save();
+    
     }
 }
