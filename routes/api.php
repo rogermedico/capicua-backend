@@ -10,6 +10,7 @@ use App\Http\Controllers\ConstantsController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\PersonalDocumentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +76,13 @@ Route::delete('/language/{language_id}', [LanguageController::class, 'deleteLang
 /* constants */
 Route::get('/constants/usertypes', [ConstantsController::class, 'userTypes'])->middleware('auth');
 Route::get('/constants/coursetypes', [ConstantsController::class, 'courseTypes'])->middleware('auth');
+
+/* personal documents */
+Route::get('/documents',[PersonalDocumentsController::class,'getAllDocuments'])->middleware('auth');
+Route::get('/documents/{id}',[PersonalDocumentsController::class,'getPersonalDocument'])->middleware('auth');
+Route::get('/documents/{user_id}',[PersonalDocumentsController::class,'getPersonalDocuments'])->middleware('auth');
+Route::post('/documents',[PersonalDocumentsController::class,'createPersonalDocument'])->middleware('auth');
+Route::delete('/documents/{id}',[PersonalDocumentsController::class,'deletePersonalDocument'])->middleware('auth');
 
 /* email */
 Route::get('/email/verify', [VerifyEmailController::class, 'sendVerifyEmail'])->middleware('auth')->name('verification.notice');

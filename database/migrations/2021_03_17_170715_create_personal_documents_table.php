@@ -17,6 +17,7 @@ class CreatePersonalDocumentsTable extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->string('original_name');
             $table->string('path');
             $table->unique(['user_id','path']);
             $table->timestamps();
