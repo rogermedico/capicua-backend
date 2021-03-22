@@ -78,9 +78,9 @@ Route::get('/constants/usertypes', [ConstantsController::class, 'userTypes'])->m
 Route::get('/constants/coursetypes', [ConstantsController::class, 'courseTypes'])->middleware('auth');
 
 /* personal documents */
-Route::get('/documents',[PersonalDocumentsController::class,'getAllDocuments'])->middleware('auth');
+Route::get('/documents/info',[PersonalDocumentsController::class,'getAllDocumentsInfo'])->middleware('auth');
+Route::get('/documents/info/{user_id}',[PersonalDocumentsController::class,'getPersonalDocumentsInfo'])->middleware('auth');
 Route::get('/documents/{id}',[PersonalDocumentsController::class,'getPersonalDocument'])->middleware('auth');
-Route::get('/documents/{user_id}',[PersonalDocumentsController::class,'getPersonalDocuments'])->middleware('auth');
 Route::post('/documents',[PersonalDocumentsController::class,'createPersonalDocument'])->middleware('auth');
 Route::delete('/documents/{id}',[PersonalDocumentsController::class,'deletePersonalDocument'])->middleware('auth');
 

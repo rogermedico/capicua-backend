@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\Models\UserType;
@@ -13,15 +14,87 @@ use App\Models\PersonalDocument;
 class PersonalDocumentsController extends Controller
 {
 
-    public function getAllDocuments(){
+    public function getAllDocumentsInfo(){
+
+      $author_rank = auth()->user()->userType->rank;
+
+      /* if user is employee forbidden */
+      if ($author_rank == UserType::max('rank')) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+      }
+
+      $documents = PersonalDocument::All();
+
+      return response()->json($documents);
+
+    }
+
+    public function getPersonalDocumentsInfo($user_id){
+
+      $params = [
+        'user_id' => $user_id
+      ];
+
+      $validator = Validator::make($params, [
+        'user_id' => 'required|integer|exists:users,id',
+      ]);
+  
+      if ($validator->fails()) {
+        return response()->json($validator->errors()->toJson(), 400);
+      }
+
+      $author_rank = auth()->user()->userType->rank;
+
+      /* if user is employee forbidden unless document owns him */
+      if ($author_rank == UserType::max('rank') && $user_id != auth()->user()->id) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+      }
+
+      $documents = PersonalDocument::where('user_id', $user_id)->get();
+
+      return response()->json($documents);
 
     }
 
     public function getPersonalDocument($id) {
 
-    }
+      $params = [
+        'id' => $id
+      ];
+  
+      $validator = Validator::make($params, [
+        'id' => 'required|integer|exists:personal_documents,id',
+      ]);
+  
+      if($validator->fails()){
+        return response()->json($validator->errors()->toJson(), 400);
+      }
 
-    public function getPersonalDocuments($user_id){
+      $personal_document = PersonalDocument::find($id);
+
+      $objective_user = User::find($personal_document->user_id);
+      $author_rank = auth()->user()->userType->rank;
+      $objective_user_rank = $objective_user->userType->rank;
+
+      /* if user is employee forbidden unless document owns him */
+      if ($author_rank == UserType::max('rank') && $personal_document->user_id != auth()->user()->id) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+      }
+
+      try {
+        $file = Storage::get($personal_document->path);
+      } catch (FileNotFoundException $e) {
+        return response()->json(['message' => 'Document not found'], 422);
+      }
+  
+      return response()->json([
+        'id' => $personal_document->id,
+        'user_id' => $personal_document->user_id,
+        'name' => $personal_document->original_name,
+        'date' => $personal_document->created_at,
+        'document' => base64_encode($file),
+        'extension' => pathinfo(storage_path() . $personal_document->path, PATHINFO_EXTENSION),
+      ], 200);
 
     }
 
@@ -44,7 +117,7 @@ class PersonalDocumentsController extends Controller
 
       $objective_user = User::find($validator->valid()['user_id']);
       $author_rank = auth()->user()->userType->rank;
-      $objective_user_rank = UserType::find($objective_user->user_type_id)->rank;
+      $objective_user_rank = $objective_user->userType->rank;
 
       /* if user is employee forbidden */
       if ($author_rank == UserType::max('rank')) {
@@ -56,23 +129,13 @@ class PersonalDocumentsController extends Controller
       $file_name_extension = $document->getClientOriginalName();
       $file_name = pathinfo($file_name_extension, PATHINFO_FILENAME);
       $file_extension = $document->getClientOriginalExtension();
-      $modified_file_name_extension = Carbon::now()->format('Y_m_d_H_i_s') . '_' . str_replace(' ', '_', $file_name_extension);
+      $modified_file_name_extension = Carbon::now()->format('Ymd_His') . '_' . str_replace(' ', '_', $file_name_extension);
       $dir = 'users' . DIRECTORY_SEPARATOR . $objective_user->id . DIRECTORY_SEPARATOR . 'documents';
       $path = $dir . DIRECTORY_SEPARATOR . $modified_file_name_extension;
   
       /* avoid windows/linux conflict */
       $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
       $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
-  
-      // if(Storage::exists($dir)){
-      //   try {
-      //     Storage::delete($user->sex_offense_certificate_path);
-      //   } catch (FileNotFoundException $e) {
-      //   }
-      // }
-      // else {
-      //   Storage::makeDirectory($dir);
-      // }
   
       $document->storeAs($dir,$modified_file_name_extension);
 
@@ -99,11 +162,32 @@ class PersonalDocumentsController extends Controller
     public function deletePersonalDocument($id)
     {
 
-        // $user = auth()->user();
-    
-        // Storage::delete($user->sex_offense_certificate_path);
-        // $user->sex_offense_certificate_path = null;
-        // $user->save();
+      $params = [
+        'id' => $id
+      ];
+  
+      $validator = Validator::make($params, [
+        'id' => 'required|integer|exists:personal_documents,id',
+      ]);
+  
+      if($validator->fails()){
+        return response()->json($validator->errors()->toJson(), 400);
+      }
+
+      $personal_document = PersonalDocument::find($id);
+
+      $objective_user = User::find($personal_document->user_id);
+      $author_rank = auth()->user()->userType->rank;
+      $objective_user_rank = $objective_user->userType->rank;
+
+      /* delete personal document forbidden if author_rank >= updated user rank and user doing operation is not admin */
+      if (($author_rank >= $objective_user_rank) && ($author_rank != 1)) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+      };
+
+      Storage::delete($personal_document->path);
+      $personal_document->delete();
+      return response()->json(null, 204);
     
     }
 }
