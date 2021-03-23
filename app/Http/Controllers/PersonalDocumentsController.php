@@ -180,7 +180,7 @@ class PersonalDocumentsController extends Controller
       $author_rank = auth()->user()->userType->rank;
       $objective_user_rank = $objective_user->userType->rank;
 
-      /* delete personal document forbidden if author_rank >= updated user rank and user doing operation is not admin */
+      /* delete personal document forbidden if author_rank >= objective user rank and user doing operation is not admin */
       if (($author_rank >= $objective_user_rank) && ($author_rank != 1)) {
         return response()->json(['message' => 'Unauthorized'], 401);
       };
