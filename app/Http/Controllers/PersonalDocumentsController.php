@@ -23,7 +23,7 @@ class PersonalDocumentsController extends Controller
         return response()->json(['message' => 'Unauthorized'], 401);
       }
 
-      $documents = PersonalDocument::All();
+      $documents = PersonalDocument::orderBy('created_at','DESC')->get();
 
       return response()->json($documents);
 
@@ -50,7 +50,7 @@ class PersonalDocumentsController extends Controller
         return response()->json(['message' => 'Unauthorized'], 401);
       }
 
-      $documents = PersonalDocument::where('user_id', $user_id)->get();
+      $documents = PersonalDocument::where('user_id', $user_id)->orderBy('created_at','DESC')->get();
 
       return response()->json($documents);
 
@@ -141,7 +141,7 @@ class PersonalDocumentsController extends Controller
 
       $created_document = PersonalDocument::create([
         'user_id' => $objective_user->id,
-        'original_name' => $file_name_extension,
+        'original_name' => $file_name,//_extension,
         'path' => $path
       ]);
   
