@@ -46,7 +46,7 @@ class VerifyEmailController extends Controller
     }
 
     if (!hash_equals((string) $params['hash'], sha1($user->getEmailForVerification()))) {
-        throw new AuthorizationException;
+      return response()->json(['message' => 'Email not verified.'],400);
     }
 
     if ($user->hasVerifiedEmail()) return response()->json(['message' => 'Email already verified.'],400);
