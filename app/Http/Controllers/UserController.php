@@ -430,7 +430,7 @@ class UserController extends Controller
     // }
 
     $validator = Validator::make($request->all(), [
-      'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2000',
+      'avatar' => 'required|image|mimes:jpg,jpeg,png|max:4000',
     ]);
 
     if ($validator->fails()) {
