@@ -302,6 +302,9 @@ class UserController extends Controller
       }
     }
 
+    /* empty driving licences */
+    if ($request->driving_licences == '') $user->drivingLicences()->delete();
+
     /* update email: send verification email and also set email_verified_at to null */
     if ($request->email && $request->email != $original_email) {
       $user->sendEmailVerificationNotification();
@@ -483,7 +486,7 @@ class UserController extends Controller
     }
 
     $author_rank = auth()->user()->userType->rank;
-    if ($author_rank > $user->userType->rank && $author_rank != 1) {
+    if ($author_rank > $user->userType->rank && $author_rank == 3) {
       return response()->json(['message' => 'Unauthorized'], 401);
     }
 
