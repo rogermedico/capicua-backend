@@ -90,7 +90,7 @@ Route::delete('/documents/{id}',[PersonalDocumentsController::class,'deletePerso
 Route::get('/home',[HomeController::class,'getAllHomePosts'])->middleware('auth');
 Route::get('/home/{id}',[HomeController::class,'getHomePost'])->middleware('auth');
 Route::post('/home',[HomeController::class,'createHomePost'])->middleware('auth');
-Route::put('/home/{id}',[HomeController::class,'updateHomePost'])->middleware('auth');
+Route::put('/home',[HomeController::class,'updateHomePost'])->middleware('auth');
 Route::delete('/home/{id}',[HomeController::class,'deleteHomePost'])->middleware('auth');
 
 /* home documents */

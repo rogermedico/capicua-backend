@@ -16,7 +16,7 @@ class CreateHomeDocumentsTable extends Migration
         Schema::create('home_documents', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('home_post_id')->unsigned();
-            $table->foreign('home_post_id')->references('id')->on('home_posts');
+            $table->foreign('home_post_id')->references('id')->on('home_posts')->onDelete('cascade');
             $table->string('original_name');
             $table->string('path');
             $table->unique(['home_post_id','path']);

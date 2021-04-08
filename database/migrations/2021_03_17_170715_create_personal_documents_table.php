@@ -16,7 +16,7 @@ class CreatePersonalDocumentsTable extends Migration
         Schema::create('personal_documents', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('original_name');
             $table->string('path');
             $table->unique(['user_id','path']);
