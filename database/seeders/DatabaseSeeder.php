@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
         CourseUserSeeder::class,
         DrivingLicenceSeeder::class,
         EducationSeeder::class,
-        LanguageSeeder::class
+        LanguageSeeder::class,
+        HomePostSeeder::class
       ]);
 
 

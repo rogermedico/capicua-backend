@@ -11,6 +11,8 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EducationController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\PersonalDocumentsController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\HomeDocumentsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +85,18 @@ Route::get('/documents/info/{user_id}',[PersonalDocumentsController::class,'getP
 Route::get('/documents/{id}',[PersonalDocumentsController::class,'getPersonalDocument'])->middleware('auth');
 Route::post('/documents',[PersonalDocumentsController::class,'createPersonalDocument'])->middleware('auth');
 Route::delete('/documents/{id}',[PersonalDocumentsController::class,'deletePersonalDocument'])->middleware('auth');
+
+/* home */
+Route::get('/home',[HomeController::class,'getAllHomePosts'])->middleware('auth');
+Route::get('/home/{id}',[HomeController::class,'getHomePost'])->middleware('auth');
+Route::post('/home',[HomeController::class,'createHomePost'])->middleware('auth');
+Route::put('/home/{id}',[HomeController::class,'updateHomePost'])->middleware('auth');
+Route::delete('/home/{id}',[HomeController::class,'deleteHomePost'])->middleware('auth');
+
+/* home documents */
+Route::get('/homedocument/{id}',[HomeDocumentsController::class,'getHomeDocument'])->middleware('auth');
+Route::post('/homedocument',[HomeDocumentsController::class,'createHomeDocument'])->middleware('auth');
+Route::delete('/homedocument/{id}',[HomeDocumentsController::class,'deleteHomeDocument'])->middleware('auth');
 
 /* email */
 Route::get('/email/verify', [VerifyEmailController::class, 'sendVerifyEmail'])->middleware('auth')->name('verification.notice');
