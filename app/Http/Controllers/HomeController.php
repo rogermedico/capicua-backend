@@ -146,7 +146,7 @@ class HomeController extends Controller
     $home_post = HomePost::create([
       'title' => $title,
       'body' => $body,
-      'position' => HomePost::count()+1
+      'position' => HomePost::max('position')+1
     ]);
 
     $home_post->documents = [];
@@ -221,167 +221,167 @@ class HomeController extends Controller
 
   }
 
-  public function setUserDni(Request $request)
-  {
+  // public function setUserDni(Request $request)
+  // {
 
-    $user = auth()->user();
+  //   $user = auth()->user();
 
-    $validator = Validator::make($request->all(), [
-      'dni' => 'required|mimetypes:application/pdf|max:10000',
-    ]);
+  //   $validator = Validator::make($request->all(), [
+  //     'dni' => 'required|mimetypes:application/pdf|max:10000',
+  //   ]);
 
-    if ($validator->fails()) {
-      return response()->json($validator->errors()->toJson(), 400);
-    }
+  //   if ($validator->fails()) {
+  //     return response()->json($validator->errors()->toJson(), 400);
+  //   }
 
-    $dni = $validator->valid()['dni'];
-    $filename = 'dni.pdf';
-    $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
-    $path = $dir . DIRECTORY_SEPARATOR . $filename;
+  //   $dni = $validator->valid()['dni'];
+  //   $filename = 'dni.pdf';
+  //   $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
+  //   $path = $dir . DIRECTORY_SEPARATOR . $filename;
 
-    /* avoid windows/linux conflict */
-    $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
-    $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
+  //   /* avoid windows/linux conflict */
+  //   $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
+  //   $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
 
-    if(Storage::exists($dir)){
-      try {
-        Storage::delete($user->dni_path);
-      } catch (FileNotFoundException $e) {
-      }
-    }
-    else {
-      Storage::makeDirectory($dir);
-    }
+  //   if(Storage::exists($dir)){
+  //     try {
+  //       Storage::delete($user->dni_path);
+  //     } catch (FileNotFoundException $e) {
+  //     }
+  //   }
+  //   else {
+  //     Storage::makeDirectory($dir);
+  //   }
 
-    $dni->storeAs($dir,$filename);
+  //   $dni->storeAs($dir,$filename);
 
-    $user->dni_path = $path;
-    $user->save();
+  //   $user->dni_path = $path;
+  //   $user->save();
 
-    return response()->json([
-      'message' => 'Dni upload successfully'
-      // 'avatar' => base64_encode(Storage::get($user->avatar_path)),
-      // 'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
-    ], 200);
-  }
+  //   return response()->json([
+  //     'message' => 'Dni upload successfully'
+  //     // 'avatar' => base64_encode(Storage::get($user->avatar_path)),
+  //     // 'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
+  //   ], 200);
+  // }
 
-  public function getUserDni($id)
-  {
+  // public function getUserDni($id)
+  // {
 
-    $user = User::find($id);
-    if (!$user) {
-      return response()->json(['message' => 'User not found'], 422);
-    }
+  //   $user = User::find($id);
+  //   if (!$user) {
+  //     return response()->json(['message' => 'User not found'], 422);
+  //   }
 
-    $author_rank = auth()->user()->userType->rank;
-    if ($author_rank > $user->userType->rank && $author_rank != 1 && $user->id != auth()->user()->id) {
-      return response()->json(['message' => 'Unauthorized'], 401);
-    }
+  //   $author_rank = auth()->user()->userType->rank;
+  //   if ($author_rank > $user->userType->rank && $author_rank != 1 && $user->id != auth()->user()->id) {
+  //     return response()->json(['message' => 'Unauthorized'], 401);
+  //   }
 
-    try {
-      $file = Storage::get($user->dni_path);
-    } catch (FileNotFoundException $e) {
-      return response()->json(['message' => 'Dni not found'], 422);
-    }
-
-
-    return response()->json([
-      'dni' => base64_encode($file),
-      'extension' => pathinfo(storage_path() . $user->dni_path, PATHINFO_EXTENSION)
-    ], 200);
-  }
-
-  public function deleteUserDni()
-  {
-
-    $user = auth()->user();
-
-    Storage::delete($user->dni_path);
-    $user->dni_path = null;
-    $user->save();
-
-  }
-
-  public function setUserOffenses(Request $request)
-  {
-
-    $user = auth()->user();
-
-    $validator = Validator::make($request->all(), [
-      'offenses' => 'required|mimetypes:application/pdf|max:10000',
-    ]);
-
-    if ($validator->fails()) {
-      return response()->json($validator->errors()->toJson(), 400);
-    }
-
-    $offenses = $validator->valid()['offenses'];
-    $filename = 'offenses.pdf';
-    $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
-    $path = $dir . DIRECTORY_SEPARATOR . $filename;
-
-    /* avoid windows/linux conflict */
-    $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
-    $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
-
-    if(Storage::exists($dir)){
-      try {
-        Storage::delete($user->sex_offense_certificate_path);
-      } catch (FileNotFoundException $e) {
-      }
-    }
-    else {
-      Storage::makeDirectory($dir);
-    }
-
-    $offenses->storeAs($dir,$filename);
-
-    $user->sex_offense_certificate_path = $path;
-    $user->save();
-
-    return response()->json([
-      'message' => 'Offenses uploaded successfully'
-      // 'avatar' => base64_encode(Storage::get($user->avatar_path)),
-      // 'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
-    ], 200);
-  }
-
-  public function getUserOffenses($id)
-  {
-
-    $user = User::find($id);
-    if (!$user) {
-      return response()->json(['message' => 'User not found'], 422);
-    }
-
-    $author_rank = auth()->user()->userType->rank;
-    if ($author_rank > $user->userType->rank && $author_rank != 1 && $user->id != auth()->user()->id) {
-      return response()->json(['message' => 'Unauthorized'], 401);
-    }
-
-    try {
-      $file = Storage::get($user->sex_offense_certificate_path);
-    } catch (FileNotFoundException $e) {
-      return response()->json(['message' => 'Offenses not found'], 422);
-    }
+  //   try {
+  //     $file = Storage::get($user->dni_path);
+  //   } catch (FileNotFoundException $e) {
+  //     return response()->json(['message' => 'Dni not found'], 422);
+  //   }
 
 
-    return response()->json([
-      'offenses' => base64_encode($file),
-      'extension' => pathinfo(storage_path() . $user->sex_offense_certificate_path, PATHINFO_EXTENSION)
-    ], 200);
-  }
+  //   return response()->json([
+  //     'dni' => base64_encode($file),
+  //     'extension' => pathinfo(storage_path() . $user->dni_path, PATHINFO_EXTENSION)
+  //   ], 200);
+  // }
 
-  public function deleteUserOffenses()
-  {
+  // public function deleteUserDni()
+  // {
 
-    $user = auth()->user();
+  //   $user = auth()->user();
 
-    Storage::delete($user->sex_offense_certificate_path);
-    $user->sex_offense_certificate_path = null;
-    $user->save();
+  //   Storage::delete($user->dni_path);
+  //   $user->dni_path = null;
+  //   $user->save();
 
-  }
+  // }
+
+  // public function setUserOffenses(Request $request)
+  // {
+
+  //   $user = auth()->user();
+
+  //   $validator = Validator::make($request->all(), [
+  //     'offenses' => 'required|mimetypes:application/pdf|max:10000',
+  //   ]);
+
+  //   if ($validator->fails()) {
+  //     return response()->json($validator->errors()->toJson(), 400);
+  //   }
+
+  //   $offenses = $validator->valid()['offenses'];
+  //   $filename = 'offenses.pdf';
+  //   $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
+  //   $path = $dir . DIRECTORY_SEPARATOR . $filename;
+
+  //   /* avoid windows/linux conflict */
+  //   $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
+  //   $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
+
+  //   if(Storage::exists($dir)){
+  //     try {
+  //       Storage::delete($user->sex_offense_certificate_path);
+  //     } catch (FileNotFoundException $e) {
+  //     }
+  //   }
+  //   else {
+  //     Storage::makeDirectory($dir);
+  //   }
+
+  //   $offenses->storeAs($dir,$filename);
+
+  //   $user->sex_offense_certificate_path = $path;
+  //   $user->save();
+
+  //   return response()->json([
+  //     'message' => 'Offenses uploaded successfully'
+  //     // 'avatar' => base64_encode(Storage::get($user->avatar_path)),
+  //     // 'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
+  //   ], 200);
+  // }
+
+  // public function getUserOffenses($id)
+  // {
+
+  //   $user = User::find($id);
+  //   if (!$user) {
+  //     return response()->json(['message' => 'User not found'], 422);
+  //   }
+
+  //   $author_rank = auth()->user()->userType->rank;
+  //   if ($author_rank > $user->userType->rank && $author_rank != 1 && $user->id != auth()->user()->id) {
+  //     return response()->json(['message' => 'Unauthorized'], 401);
+  //   }
+
+  //   try {
+  //     $file = Storage::get($user->sex_offense_certificate_path);
+  //   } catch (FileNotFoundException $e) {
+  //     return response()->json(['message' => 'Offenses not found'], 422);
+  //   }
+
+
+  //   return response()->json([
+  //     'offenses' => base64_encode($file),
+  //     'extension' => pathinfo(storage_path() . $user->sex_offense_certificate_path, PATHINFO_EXTENSION)
+  //   ], 200);
+  // }
+
+  // public function deleteUserOffenses()
+  // {
+
+  //   $user = auth()->user();
+
+  //   Storage::delete($user->sex_offense_certificate_path);
+  //   $user->sex_offense_certificate_path = null;
+  //   $user->save();
+
+  // }
 
 
 

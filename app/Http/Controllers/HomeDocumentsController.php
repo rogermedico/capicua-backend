@@ -39,7 +39,8 @@ class HomeDocumentsController extends Controller
       return response()->json([
         'id' => $home_document->id,
         'home_post_id' => $home_document->home_post_id,
-        'name' => $home_document->original_name,
+        'original_name' => $home_document->original_name,
+        'created_at' => $home_document->created_at,
         'document' => base64_encode($file),
         'extension' => pathinfo(storage_path() . $home_document->path, PATHINFO_EXTENSION),
       ], 200);
@@ -98,7 +99,7 @@ class HomeDocumentsController extends Controller
         'id' => $created_document->id,
         'home_post_id' => $home_post_id,
         'original_name' => $created_document->original_name,
-        'created_at' => $created_document->created_at
+        'created_at' => $created_document->created_at,
       ], 200);
     }
 
