@@ -145,7 +145,8 @@ class HomeController extends Controller
 
     $home_post = HomePost::create([
       'title' => $title,
-      'body' => $body
+      'body' => $body,
+      'position' => HomePost::count()+1
     ]);
 
     $home_post->documents = [];
@@ -157,7 +158,6 @@ class HomeController extends Controller
   {
 
     $validator = Validator::make($request->all(), [
-
       'id' => 'required|integer|exists:home_posts,id',
       'title' => 'required|string',
       'body' => 'required|string'
