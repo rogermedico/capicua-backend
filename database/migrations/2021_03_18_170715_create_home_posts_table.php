@@ -17,6 +17,7 @@ class CreateHomePostsTable extends Migration
             $table->id();
             $table->string('title');
             $table->text('body');
+            $table->integer('position');//->unique();
             $table->timestamps();
         });
     }

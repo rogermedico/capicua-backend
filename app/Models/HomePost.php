@@ -16,7 +16,8 @@ class HomePost extends Model
      */
     protected $fillable = [
       'title',
-      'body'
+      'body',
+      'position'
   ];
 
     protected $hidden = [

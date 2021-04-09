@@ -25,7 +25,7 @@ class HomePostFactory extends Factory
     {
         return [
           'title' => $this->faker->sentence($nbWords = 8, $variableNbWords = true),
-          'body' => $this->faker->text($maxNbChars = 400),
+          'body' => $this->faker->text($maxNbChars = 400)
         ];
 
     }

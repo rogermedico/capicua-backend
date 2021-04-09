@@ -79,7 +79,7 @@ class HomeController extends Controller
    */
   public function getAllHomePosts()
   {
-    $home_posts = HomePost::all();
+    $home_posts = HomePost::orderBy('position')->get();
     /* customize user fields */
     $home_posts->transform(function ($home_post) {
       $home_post->documents = $home_post->HomeDocuments;
