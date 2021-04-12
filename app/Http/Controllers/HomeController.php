@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Carbon;
@@ -187,6 +188,39 @@ class HomeController extends Controller
     unset($home_post->HomeDocuments);
 
     return response()->json($home_post);
+  }
+
+  public function changePositionHomePost($origin, $destination){
+    $params = [
+      'origin' => $origin,
+      'destination' => $destination
+    ];
+
+    $validator = Validator::make($params, [
+      'origin' => 'required|integer|exists:home_posts,id',
+      'destination' => 'required|integer|exists:home_posts,id|different:origin',
+    ]);
+
+    if($validator->fails()){
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $origin_id = $validator->valid()['origin'];
+    $destination_id = $validator->valid()['destination'];
+
+    DB::transaction(function () use($origin_id,$destination_id) {
+      $origin_post = HomePost::find($destination_id);
+      $destination_post = HomePost::find($origin_id);
+      $origin_position = $origin_post->position;
+      $origin_post->position = 0;
+      $origin_post->save();
+      $origin_post->position = $destination_post->position;
+      $destination_post->position = $origin_position;
+      $destination_post->save();
+      $origin_post->save();
+    });
+
+    return response()->json(['message' => 'Positions changed'], 200);
   }
 
   public function deleteHomePost($home_post_id){
