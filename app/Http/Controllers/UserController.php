@@ -244,6 +244,8 @@ class UserController extends Controller
       'phone' => 'nullable|string',
       // 'deactivated' => 'nullable|boolean',
       'driving_licences' => 'nullable|string',
+      'social_security_number' => 'nullable|string',
+      'bank_account' => 'nullable|string'
     ]);
 
     $user = auth()->user();

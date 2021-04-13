@@ -38,7 +38,9 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         'deactivated',
         'avatar_path',
         'dni_path',
-        'sex_offense_certificate_path'
+        'sex_offense_certificate_path',
+        'bank_account',
+        'social_security_number'
     ];
 
     /**
