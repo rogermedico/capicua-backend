@@ -9,7 +9,7 @@ use Illuminate\Support\Carbon;
 use App\Models\User;
 use App\Models\UserType;
 use App\Models\PersonalDocument;
-
+use App\Notifications\NewPersonalDocumentNotification;
 
 class PersonalDocumentsController extends Controller
 {
@@ -144,6 +144,10 @@ class PersonalDocumentsController extends Controller
         'original_name' => $file_name,//_extension,
         'path' => $path
       ]);
+
+      $objective_user->notify(new NewPersonalDocumentNotification([
+        'original_name' =>$created_document->original_name
+      ]));
   
       return response()->json([
         'id' => $created_document->id,
