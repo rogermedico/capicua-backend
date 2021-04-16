@@ -13,10 +13,11 @@ use Illuminate\Support\HtmlString;
 class NewPersonalDocumentNotification extends Notification
 {
 
-
+    protected $user_name;
     protected $document_name;
 
     public function __construct($arr){
+      $this->user_name = $arr['user_name'];
       $this->document_name = $arr['original_name'];
     }
 
@@ -41,6 +42,7 @@ class NewPersonalDocumentNotification extends Notification
     {
         return (new MailMessage)
             ->subject('Nou document Personal')
+            ->greeting('Hola '.$this->user_name.'!')
             ->line('Tens disponible el següent document personal a la intranet:')
             ->line(new HtmlString('<ul><li>'.$this->document_name.'</li></ul>'))
             ->line('Per consultar-lo accedeix amb les teves credencials i dirigeix-te a l\'apartat els meus documents.');

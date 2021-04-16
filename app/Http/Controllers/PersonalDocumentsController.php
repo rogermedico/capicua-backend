@@ -146,6 +146,7 @@ class PersonalDocumentsController extends Controller
       ]);
 
       $objective_user->notify(new NewPersonalDocumentNotification([
+        'user_name' => $objective_user->name,
         'original_name' =>$created_document->original_name
       ]));
   
