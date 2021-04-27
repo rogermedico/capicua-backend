@@ -47,6 +47,10 @@ Route::post('/user/offenses', [UserController::class, 'setUserOffenses'])->middl
 Route::get('/user/offenses/{id}', [UserController::class, 'getUserOffenses'])->middleware('auth');
 Route::delete('/user/offenses', [UserController::class, 'deleteUserOffenses'])->middleware('auth');
 
+Route::post('/user/cv', [UserController::class, 'setUserCV'])->middleware('auth');
+Route::get('/user/cv/{id}', [UserController::class, 'getUserCV'])->middleware('auth');
+Route::delete('/user/cv', [UserController::class, 'deleteUserCV'])->middleware('auth');
+
 Route::post('/user/activate', [UserController::class, 'activate'])->middleware('auth');
 Route::post('/user/deactivate', [UserController::class, 'deactivate'])->middleware('auth');
 Route::delete('/user/{user_id}', [UserController::class, 'delete'])->middleware('auth');

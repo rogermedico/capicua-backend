@@ -69,6 +69,10 @@ class UserController extends Controller
     if ($user->sex_offense_certificate_path) $user->sex_offense_certificate_file = true; //base64_encode(Storage::get($user->avatar_file));
     else $user->sex_offense_certificate_file = false;
 
+    /* cv */
+    if ($user->cv_path) $user->cv_file = true; //base64_encode(Storage::get($user->avatar_file));
+    else $user->cv_file = false;
+
     return $user;
   }
 
@@ -768,6 +772,87 @@ class UserController extends Controller
 
     Storage::delete($user->sex_offense_certificate_path);
     $user->sex_offense_certificate_path = null;
+    $user->save();
+
+  }
+
+  public function setUserCV(Request $request)
+  {
+
+    $user = auth()->user();
+
+    $validator = Validator::make($request->all(), [
+      'cv' => 'required|mimetypes:application/pdf|max:10000',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->toJson(), 400);
+    }
+
+    $cv = $validator->valid()['cv'];
+    $filename = 'cv.pdf';
+    $dir = 'users' . DIRECTORY_SEPARATOR . $user->id;
+    $path = $dir . DIRECTORY_SEPARATOR . $filename;
+
+    /* avoid windows/linux conflict */
+    $path = str_replace('/', DIRECTORY_SEPARATOR, $path);
+    $dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);
+
+    if(Storage::exists($dir)){
+      try {
+        Storage::delete($user->cv_path);
+      } catch (FileNotFoundException $e) {
+      }
+    }
+    else {
+      Storage::makeDirectory($dir);
+    }
+
+    $cv->storeAs($dir,$filename);
+
+    $user->cv_path = $path;
+    $user->save();
+
+    return response()->json([
+      'message' => 'CV uploaded successfully'
+      // 'avatar' => base64_encode(Storage::get($user->avatar_path)),
+      // 'extension' => pathinfo(storage_path() . $user->avatar_path, PATHINFO_EXTENSION)
+    ], 200);
+  }
+
+  public function getUserCV($id)
+  {
+
+    $user = User::find($id);
+    if (!$user) {
+      return response()->json(['message' => 'User not found'], 422);
+    }
+
+    $author_rank = auth()->user()->userType->rank;
+    if ($author_rank > $user->userType->rank && $author_rank != 1 && $user->id != auth()->user()->id) {
+      return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    try {
+      $file = Storage::get($user->cv_path);
+    } catch (FileNotFoundException $e) {
+      return response()->json(['message' => 'CV not found'], 422);
+    }
+
+
+    return response()->json([
+      'cv' => base64_encode($file),
+      'extension' => pathinfo(storage_path() . $user->cv_path, PATHINFO_EXTENSION)
+    ], 200);
+  }
+
+  public function deleteUserCV()
+  {
+
+    $user = auth()->user();
+
+    Storage::delete($user->cv_path);
+    $user->cv_path = null;
     $user->save();
 
   }

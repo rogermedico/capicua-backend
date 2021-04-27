@@ -36,6 +36,7 @@ class CreateUsersTable extends Migration
       $table->string('avatar_path')->nullable();
       $table->string('dni_path')->nullable();
       $table->string('sex_offense_certificate_path')->nullable();
+      $table->string('cv_path')->nullable();
       $table->bigInteger('user_type_id')->unsigned();
       $table->foreign('user_type_id')->references('id')->on('user_types');
       $table->timestamps();
