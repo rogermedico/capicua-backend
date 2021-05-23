@@ -15,17 +15,17 @@ class HomePost extends Model
      * @var array
      */
     protected $fillable = [
-      'title',
-      'body',
-      'position'
-  ];
+        'title',
+        'body',
+        'position'
+    ];
 
     protected $hidden = [
-      'updated_at'
+        'updated_at'
     ];
 
     public function homeDocuments(){
-      return $this->hasMany(HomeDocument::class);
+        return $this->hasMany(HomeDocument::class);
     }
 
 }

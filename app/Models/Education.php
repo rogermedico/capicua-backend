@@ -17,11 +17,11 @@ class Education extends Model
      * @var array
      */
     protected $fillable = [
-      'user_id',
-      'name',
-      'finish_date',
-      'finished'
-    ];
+        'user_id',
+        'name',
+        'finish_date',
+        'finished'
+      ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -29,8 +29,8 @@ class Education extends Model
      * @var array
      */
     protected $hidden = [
-      'created_at',
-      'updated_at'
+        'created_at',
+        'updated_at'
     ];
 
       /**
@@ -39,7 +39,7 @@ class Education extends Model
      * @var array
      */
     protected $casts = [
-      'finished' => 'boolean'
+        'finished' => 'boolean'
     ];
 
     public function user()

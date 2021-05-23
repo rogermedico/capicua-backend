@@ -17,105 +17,84 @@ use Validator;
 class CourseController extends Controller
 {
 
-  public function createCourse(Request $request) {
-    $validator = Validator::make($request->all(), [
-      'course_id' => 'required|integer|exists:courses,id',
-      'number' => 'nullable|string|between:2,100',
-      'expedition_date' => 'nullable|date',
-      'valid_until' => 'nullable|date'
-    ]);
+  public function createCourse(Request $request) 
+  {
+      $validator = Validator::make($request->all(), [
+          'course_id' => 'required|integer|exists:courses,id',
+          'number' => 'nullable|string|between:2,100',
+          'expedition_date' => 'nullable|date',
+          'valid_until' => 'nullable|date'
+      ]);
 
-    if($validator->fails()){
-        return response()->json($validator->errors()->toJson(), 400);
-    }
-
-    $user = auth()->user();
-    // $user = User::find($request->get('user_id'));
-    // $author_rank = auth()->user()->userType->rank;
-    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-    //   return response()->json(['message' => 'Unauthorized'],401);
-    // }
-
-    $course = $user->courses()->find($request->get('course_id'));
-    if(!$course) {
-      try {
-        $user->courses()->attach($request->get('course_id'),[
-          'number'=> $request->get('number'),
-          'expedition_date' => $request->get('expedition_date'),
-          'valid_until' => $request->get('valid_until'),
-          'created_at' => Carbon::now(),
-          'updated_at' => Carbon::now()
-        ]);
-      } catch(QueryException $e){
-        return response()->json(['message' => 'Course not created'], 422);
+      if ($validator->fails()) {
+          return response()->json(['error' => $validator->errors()->first()], 400);
       }
-    }
-    else {
-      return response()->json(['message' => 'Course not created'], 422);
-      // try {
-      //   $user->courses()->updateExistingPivot($request->get('course_id'),[
-      //     'number'=> ($request->get('number')?$request->get('number'):$course->pivot->number),
-      //     'expedition_date' => ($request->get('expedition_date')?$request->get('expedition_date'):$course->pivot->expedition_date),
-      //     'valid_until' => ($request->get('valid_until')?$request->get('valid_until'):$course->pivot->valid_until),
-      //     'updated_at' => Carbon::now()
-      //   ]);
-      // } catch(QueryException $e){
-      //   return response()->json(['message' => 'Course not updated'], 422);
-      // }
-    }
 
-    $response_course = $user->courses()->find($request->get('course_id'));
-    $response_course['number'] = $response_course->pivot->number; 
-    $response_course['expedition_date'] = $response_course->pivot->expedition_date; 
-    $response_course['valid_until'] = $response_course->pivot->valid_until; 
+      $validated_data = $validator->valid();
 
-    return response()->json(($response_course), 200);
+      $course = auth()->user()->courses()->find($validated_data['course_id']);
+      if(!$course) {
+          auth()->user()->courses()->attach(
+              $validated_data['course_id'],
+              [
+                  'number'=> $validated_data['number'],
+                  'expedition_date' => $validated_data['expedition_date'],
+                  'valid_until' => $validated_data['valid_until'],
+                  'created_at' => Carbon::now(),
+                  'updated_at' => Carbon::now()
+              ]
+          );
+      }
+      else {
+          return response()->json(['message' => 'Course not created'], 422);
+      }
+
+      $response_course = auth()->user()->courses()->find($validated_data['course_id']);
+      $response_course['number'] = $response_course->pivot->number; 
+      $response_course['expedition_date'] = $response_course->pivot->expedition_date; 
+      $response_course['valid_until'] = $response_course->pivot->valid_until; 
+
+      return response()->json(($response_course), 200);
 
   }
 
-  public function updateCourse(Request $request) {
-    $validator = Validator::make($request->all(), [
-      'course_id' => 'required|integer|exists:courses,id',
-      'number' => 'nullable|string|between:2,100',
-      'expedition_date' => 'nullable|date',
-      'valid_until' => 'nullable|date'
-    ]);
+  public function updateCourse(Request $request) 
+  {
+      $validator = Validator::make($request->all(), [
+          'course_id' => 'required|integer|exists:courses,id',
+          'number' => 'nullable|string|between:2,100',
+          'expedition_date' => 'nullable|date',
+          'valid_until' => 'nullable|date'
+      ]);
 
-    if($validator->fails()){
-        return response()->json($validator->errors()->toJson(), 400);
-    }
-
-    $user = auth()->user();
-    // $user = User::find($request->get('user_id'));
-    // $author_rank = auth()->user()->userType->rank;
-    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-    //   return response()->json(['message' => 'Unauthorized'],401);
-    // }
-
-    $course = $user->courses()->find($request->get('course_id'));
-    if( $course) {
-      try {
-        $user->courses()->updateExistingPivot($request->get('course_id'),[
-          'number'=> ($request->get('number')?$request->get('number'):$course->pivot->number),
-          'expedition_date' => ($request->get('expedition_date')?$request->get('expedition_date'):$course->pivot->expedition_date),
-          'valid_until' => ($request->get('valid_until')?$request->get('valid_until'):$course->pivot->valid_until),
-          'updated_at' => Carbon::now()
-        ]);
-      } catch(QueryException $e){
-        return response()->json(['message' => 'Course not updated'], 422);
+      if ($validator->fails()) {
+          return response()->json(['error' => $validator->errors()->first()], 400);
       }
-    }
-    else {
-      return response()->json(['message' => 'Course not updated'], 422);
 
-    }
+      $validated_data = $validator->valid();
 
-    $response_course = $user->courses()->find($request->get('course_id'));
-    $response_course['number'] = $response_course->pivot->number; 
-    $response_course['expedition_date'] = $response_course->pivot->expedition_date; 
-    $response_course['valid_until'] = $response_course->pivot->valid_until; 
+      $course = auth()->user()->courses()->find($validated_data['course_id']);
+      if($course) {
+          auth()->user()->courses()->updateExistingPivot(
+              $validated_data['course_id'],
+              [
+                  'number'=> ($validated_data['number']?$validated_data['number']:$course->pivot->number),
+                  'expedition_date' => ($validated_data['expedition_date']?$validated_data['expedition_date']:$course->pivot->expedition_date),
+                  'valid_until' => ($validated_data['valid_until']?$validated_data['valid_until']:$course->pivot->valid_until),
+                  'updated_at' => Carbon::now()
+              ]
+          );
+      }
+      else {
+          return response()->json(['message' => 'Course not updated'], 422);
+      }
 
-    return response()->json(($response_course), 200);
+      $response_course = auth()->user()->courses()->find($validated_data['course_id']);
+      $response_course['number'] = $response_course->pivot->number; 
+      $response_course['expedition_date'] = $response_course->pivot->expedition_date; 
+      $response_course['valid_until'] = $response_course->pivot->valid_until; 
+
+      return response()->json(($response_course), 200);
 
   }
 
@@ -124,27 +103,24 @@ class CourseController extends Controller
   public function deleteCourse(Request $request)
   {
 
-    $params = [
-      'course_id' => $request->route('course_id')
-    ];
+      $params = [
+          'course_id' => $request->route('course_id')
+      ];
 
-    $validator = Validator::make($params, [
-      'course_id' => 'required|integer|exists:courses,id',
-    ]);
+      $validator = Validator::make($params, [
+          'course_id' => 'required|integer|exists:courses,id',
+      ]);
 
-    if($validator->fails()){
-      return response()->json($validator->errors()->toJson(), 400);
-    }
+      if ($validator->fails()) {
+          return response()->json(['error' => $validator->errors()->first()], 400);
+      }
 
-    $user = auth()->user();
-    // $user = User::find($params['user_id']);
-    // $author_rank = auth()->user()->userType->rank;
-    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-    //   return response()->json(['message' => 'Unauthorized'],401);
-    // }
+      $validated_data = $validator->valid();
 
-    $user->courses()->detach($params['course_id']);
-    return response()->json(null, 204);
+      auth()->user()->courses()->detach($validated_data['course_id']);
+
+      return response()->json(null, 204);
+      
   }
 
 }

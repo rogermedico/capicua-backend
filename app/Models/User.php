@@ -88,27 +88,23 @@ class User extends Authenticatable implements JWTSubject, MustVerifyEmail
         return [];
     }
 
-    // public function sendEmailVerificationNotification(){
-    //   $this->notify(new CustomVerifyEmailNotification);
-    // }
-
     public function courses(){
-      return $this->belongsToMany(Course::class)->withPivot('number','expedition_date','valid_until')->withTimestamps();
+        return $this->belongsToMany(Course::class)->withPivot('number','expedition_date','valid_until')->withTimestamps();
     }
 
     public function userType(){
-      return $this->belongsTo(UserType::class);
+        return $this->belongsTo(UserType::class);
     }
 
     public function drivingLicences(){
-      return $this->hasMany(DrivingLicence::class);
+        return $this->hasMany(DrivingLicence::class);
     }
 
     public function educations(){
-      return $this->hasMany(Education::class);
+        return $this->hasMany(Education::class);
     }
 
     public function personalDocuments(){
-      return $this->hasMany(PersonalDocument::class);
+        return $this->hasMany(PersonalDocument::class);
     }
 }

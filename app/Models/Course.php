@@ -10,9 +10,9 @@ class Course extends Model
     use HasFactory;
 
     protected $hidden = [
-      'pivot',
-      'created_at',
-      'updated_at'
+        'pivot',
+        'created_at',
+        'updated_at'
     ];
 
     public function users(){

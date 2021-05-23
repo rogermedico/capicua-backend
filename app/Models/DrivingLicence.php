@@ -15,10 +15,10 @@ class DrivingLicence extends Model
      * @var array
      */
     protected $fillable = [
-      'type',
-      'expedition_date',
-      'valid_until',
-  ];
+        'type',
+        'expedition_date',
+        'valid_until',
+    ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -26,11 +26,11 @@ class DrivingLicence extends Model
      * @var array
      */
     protected $hidden = [
-      'id',
-      'user_id',
-      'created_at',
-      'updated_at'
-  ];
+        'id',
+        'user_id',
+        'created_at',
+        'updated_at'
+    ];
 
     public function user()
     {

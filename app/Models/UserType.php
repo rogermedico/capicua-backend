@@ -15,11 +15,11 @@ class UserType extends Model
    * @var array
    */
   protected $hidden = [
-    'created_at',
-    'updated_at'
-];
+      'created_at',
+      'updated_at'
+  ];
 
   public function users() {
-    return $this->hasMany(User::class);
+      return $this->hasMany(User::class);
   }
 }

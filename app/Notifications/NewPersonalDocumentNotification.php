@@ -17,8 +17,8 @@ class NewPersonalDocumentNotification extends Notification
     protected $document_name;
 
     public function __construct($arr){
-      $this->user_name = $arr['user_name'];
-      $this->document_name = $arr['original_name'];
+        $this->user_name = $arr['user_name'];
+        $this->document_name = $arr['original_name'];
     }
 
     /**
@@ -47,6 +47,5 @@ class NewPersonalDocumentNotification extends Notification
             ->line(new HtmlString('<ul><li>'.$this->document_name.'</li></ul>'))
             ->line('Per consultar-lo accedeix amb les teves credencials i dirigeix-te a l\'apartat els meus documents.');
     }
-
 
 }
