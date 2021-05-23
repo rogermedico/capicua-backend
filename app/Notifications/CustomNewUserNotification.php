@@ -70,7 +70,8 @@ class CustomNewUserNotification extends Notification
      */
     protected function verificationUrl($notifiable)
     {
-        return env('FRONTEND_URL').env('FRONTEND_VERIFY_EMAIL').'/'.$notifiable->getKey().'/'.sha1($notifiable->getEmailForVerification());
+        //return env('FRONTEND_URL').env('FRONTEND_VERIFY_EMAIL').'/'.$notifiable->getKey().'/'.sha1($notifiable->getEmailForVerification());
+        return config('frontend.url').config('frontend.verify_email_path').'/'.$notifiable->getKey().'/'.sha1($notifiable->getEmailForVerification());
     }
 
 }

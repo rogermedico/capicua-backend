@@ -33,18 +33,18 @@ class EducationFactory extends Factory
     }
 
     private function randFinishDateFinished(){
-      if((bool)rand(0,1)){
-        return (object)[
-          'finish_date' => $this->faker->date($format = 'Y-m-d', $max = '-6 years'),
-          'finished' => true
-        ];
-      }
-      else {
-        return (object)[
-          'finish_date' => null,
-          'finished' => (bool)rand(0,1)
-        ];
-      }
+        if((bool)rand(0,1)){
+            return (object)[
+                'finish_date' => $this->faker->date($format = 'Y-m-d', $max = '-6 years'),
+                'finished' => true
+            ];
+        }
+        else {
+            return (object)[
+                'finish_date' => null,
+                'finished' => (bool)rand(0,1)
+            ];
+        }
     }
 
 

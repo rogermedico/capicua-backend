@@ -14,11 +14,10 @@ class HomePostSeeder extends Seeder
      */
     public function run()
     {
-      for($i=0;$i<5;$i++){
-        $homePost = HomePost::factory()->create([
-          'position' => $i+1
-        ]);
-
-      }
+        for($i=0;$i<5;$i++){
+            $homePost = HomePost::factory()->create([
+              'position' => $i+1
+            ]);
+        }
     }
 }

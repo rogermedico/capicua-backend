@@ -24,8 +24,8 @@ class HomePostFactory extends Factory
     public function definition()
     {
         return [
-          'title' => $this->faker->sentence($nbWords = 8, $variableNbWords = true),
-          'body' => $this->faker->text($maxNbChars = 400)
+            'title' => $this->faker->sentence($nbWords = 8, $variableNbWords = true),
+            'body' => $this->faker->text($maxNbChars = 400)
         ];
 
     }

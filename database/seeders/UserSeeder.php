@@ -16,23 +16,25 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
+        /* three known users one for each role */
+        User::factory()->create([
+            'email' => 'admin@gmail.com',
+            'user_type_id' => 1,
+            'email_verified_at' => Carbon::now()
+        ]);
+        User::factory()->create([
+            'email' => 'moderator@gmail.com',
+            'user_type_id' => 2,
+            'email_verified_at' => Carbon::now()
+        ]);
+        User::factory()->create([
+            'email' => 'worker@gmail.com',
+            'user_type_id' => 3,
+            'email_verified_at' => Carbon::now()
+        ]);
 
-      User::factory()->create([
-        'email' => 'admin@gmail.com',
-        'user_type_id' => 1,
-        'email_verified_at' => Carbon::now()
-      ]);
-      User::factory()->create([
-        'email' => 'moderator@gmail.com',
-        'user_type_id' => 2,
-        'email_verified_at' => Carbon::now()
-      ]);
-      User::factory()->create([
-        'email' => 'worker@gmail.com',
-        'user_type_id' => 3,
-        'email_verified_at' => Carbon::now()
-      ]);
-      User::factory()->times(50)->create();
+        /* fifty more random users */
+        User::factory()->times(50)->create();
 
     }
 }

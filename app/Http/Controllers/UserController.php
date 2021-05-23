@@ -232,7 +232,7 @@ class UserController extends Controller
   public function updateProfile(Request $request)
   {
 
-    $request->validate([
+    $validated = $request->validate([
       'name' => 'sometimes|required|string|between:2,100',
       'surname' => 'sometimes|required|string|between:2,100',
       'email' => 'sometimes|required|string|email|max:100',
@@ -340,7 +340,7 @@ class UserController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return response()->json($validator->errors()->toJson(), 400);
+      return response()->json(['error' => $validator->errors()->first()], 400);
     }
 
     $validated_data = $validator->valid();

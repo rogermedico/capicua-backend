@@ -16,13 +16,11 @@ class EducationSeeder extends Seeder
     public function run()
     {
 
-      User::all()->each(function ($user){
-
-        $nEducations = random_int(0,3);
-        for($i=0;$i<$nEducations;$i++){
-          Education::factory()->create(['user_id'=> $user->id]);
-        }
-
-      });
+        User::all()->each(function ($user){
+            $nEducations = random_int(0,3);
+            for($i=0;$i<$nEducations;$i++){
+              Education::factory()->create(['user_id'=> $user->id]);
+            }
+        });
     }
 }

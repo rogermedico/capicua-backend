@@ -7,20 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserType extends Model
 {
-    use HasFactory;
+  use HasFactory;
 
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-      'created_at',
-      'updated_at'
-  ];
+  /**
+   * The attributes that should be hidden for arrays.
+   *
+   * @var array
+   */
+  protected $hidden = [
+    'created_at',
+    'updated_at'
+];
 
-    public function users()
-    {
-        return $this->hasMany('App\Models\User');
-    }
+  public function users() {
+    return $this->hasMany(User::class);
+  }
 }

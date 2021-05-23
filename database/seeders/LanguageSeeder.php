@@ -16,26 +16,26 @@ class LanguageSeeder extends Seeder
     public function run()
     {
 
-      User::all()->each(function ($user){
+        User::all()->each(function ($user){
 
-        $languageNames = [
-          'Català',
-          'Castellà',
-          'Anglès',
-          'Francès',
-        ];
+            $languageNames = [
+              'Català',
+              'Castellà',
+              'Anglès',
+              'Francès',
+            ];
 
-        $nLanguages = random_int(0,3);
-        if($nLanguages){
-          $languageIndexes = (array) array_rand($languageNames,$nLanguages);
-          foreach($languageIndexes as $i){
-            Language::factory()->create([
-              'user_id'=> $user->id,
-              'name' => $languageNames[$i]
-            ]);
-          }
-        }
+            $nLanguages = random_int(0,3);
+            if($nLanguages){
+                $languageIndexes = (array) array_rand($languageNames,$nLanguages);
+                foreach($languageIndexes as $i){
+                    Language::factory()->create([
+                        'user_id'=> $user->id,
+                        'name' => $languageNames[$i]
+                    ]);
+                }
+            }
 
-      });
+        });
     }
 }

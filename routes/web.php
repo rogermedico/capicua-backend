@@ -14,6 +14,6 @@ use App\Models\User;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::fallback(function () {
+  return Redirect::away(config('frontend.url'));
 });

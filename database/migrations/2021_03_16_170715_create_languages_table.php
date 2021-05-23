@@ -14,14 +14,14 @@ class CreateLanguagesTable extends Migration
     public function up()
     {
         Schema::create('languages', function (Blueprint $table) {
-          $table->id();
-          $table->bigInteger('user_id')->unsigned();
-          $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-          $table->string('name');
-          $table->string('level');
-          $table->date('finish_date')->nullable();
-          $table->unique(['user_id','name']);
-          $table->timestamps();
+            $table->id();
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->string('name');
+            $table->string('level');
+            $table->date('finish_date')->nullable();
+            $table->unique(['user_id','name']);
+            $table->timestamps();
         });
 
     }

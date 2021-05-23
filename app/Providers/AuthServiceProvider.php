@@ -29,11 +29,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         ResetPassword::createUrlUsing(function($user, string $token){
-          return env('FRONTEND_URL').env('FRONTEND_RESET_PASSWORD').'/'.$token.'?email='.urlencode(strtolower($user->getEmailForPasswordReset()));
+          return config('frontend.url').config('frontend.reset_password_path').'/'.$token.'?email='.urlencode(strtolower($user->getEmailForPasswordReset()));
         });
 
         VerifyEmail::createUrlUsing(function($user){
-          return env('FRONTEND_URL').env('FRONTEND_VERIFY_EMAIL').'/'.$user->getKey().'/'.sha1($user->getEmailForVerification());
+          return config('frontend.url').config('frontend.verify_email_path').'/'.$user->getKey().'/'.sha1($user->getEmailForVerification());
         });
 
     }

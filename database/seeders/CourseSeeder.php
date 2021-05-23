@@ -14,17 +14,17 @@ class CourseSeeder extends Seeder
      */
     public function run()
     {
-      $coursesNames = [
-        ['name' => 'Monitor de lleure'],
-        ['name' => 'Director de lleure'],
-        ['name' => 'Director de lleure (CFGS Animació Sociocultural)'],
-        ['name' => 'Monitor de menjador'],
-		    ['name' => 'Manipulació d\'aliments'],
-        ['name' => 'Vetllador'],
-      ];
+        $coursesNames = [
+            ['name' => 'Monitor de lleure'],
+            ['name' => 'Director de lleure'],
+            ['name' => 'Director de lleure (CFGS Animació Sociocultural)'],
+            ['name' => 'Monitor de menjador'],
+            ['name' => 'Manipulació d\'aliments'],
+            ['name' => 'Vetllador'],
+        ];
 
-      foreach($coursesNames as $coursesName){
-        Course::create($coursesName);
-      }
+        foreach($coursesNames as $coursesName){
+            Course::create($coursesName);
+        }
     }
 }

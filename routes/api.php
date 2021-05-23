@@ -27,7 +27,6 @@ use App\Http\Controllers\HomeDocumentsController;
 
 /* auth */
 Route::post('/auth/login', [AuthController::class, 'login']);
-Route::post('/auth/register', [AuthController::class, 'register'])->middleware('auth');
 Route::post('/auth/logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::get('/auth/refresh', [AuthController::class, 'refresh'])->middleware('auth');
 
@@ -110,3 +109,8 @@ Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, 'verifyEm
 /* forgot password */
 Route::post('/password/forgot', [ForgotPasswordController::class, 'sendForgotPasswordEmail'])->middleware('guest')->name('password.request');
 Route::post('/password/reset', [ForgotPasswordController::class, 'passwordReset'])->middleware('guest')->name('password.update');
+
+/* check server */
+Route::get('/test', function(){
+  return response()->json(['status' => 'ok']);
+});

@@ -43,9 +43,8 @@ class UserFactory extends Factory
     }
 
     private function randomUserType(){
-      $alloweduserTypes = UserType::where('rank','!=',1)->get();
-      return $alloweduserTypes->random();
+        $alloweduserTypes = UserType::where('rank','!=',1)->get();
+        return $alloweduserTypes->random();
     }
-
 
 }

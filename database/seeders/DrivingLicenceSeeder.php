@@ -17,21 +17,22 @@ class DrivingLicenceSeeder extends Seeder
     public function run()
     {
 
-      User::all()->each(function ($user) /*use (&$driverLicences)*/{
+        User::all()->each(function ($user) {
 
-        if((bool) random_int(0, 1)){
-          $driverLicence = DrivingLicence::create([
-            'user_id' => $user['id'],
-            'type'=> 'A'
-            ]);
-        }
-        if((bool) random_int(0, 1)){
-          $driverLicence = DrivingLicence::create([
-            'user_id' => $user['id'],
-            'type'=> 'B'
-            ]);
-        }
+            if((bool) random_int(0, 1)){
+              $driverLicence = DrivingLicence::create([
+                'user_id' => $user['id'],
+                'type'=> 'A'
+                ]);
+            }
+            
+            if((bool) random_int(0, 1)){
+              $driverLicence = DrivingLicence::create([
+                'user_id' => $user['id'],
+                'type'=> 'B'
+                ]);
+            }
 
-    });
+        });
     }
 }
