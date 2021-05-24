@@ -1,171 +1,102 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Carbon;
-use App\Models\User;
-use App\models\DrivingLicence;
-use App\Models\UserType;
 use App\Models\Education;
-use App\Models\Language;
-use App\Notifications\CustomNewUserNotification;
-use Illuminate\Database\QueryException;
 use Validator;
 
 class EducationController extends Controller
 {
 
-  public function createEducation(Request $request) {
-    $validator = Validator::make($request->all(), [
-      'name' => 'required|string|between:2,100',
-      'finish_date' => 'nullable|date',
-      'finished' => 'nullable|boolean'
-    ]);
-
-    if($validator->fails()){
-        return response()->json($validator->errors()->toJson(), 400);
-    }
-    $user = auth()->user();
-    // $user = User::find($request->get('user_id'));
-    // $author_rank = auth()->user()->userType->rank;
-    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-    //   return response()->json(['message' => 'Unauthorized'],401);
-    // }
-
-    try {
-      $education = Education::create(array_merge($validator->validated(),
-      ['user_id' => $user->id]
-    ));
-    } catch(QueryException $e){
-      return response()->json(['message' => 'Education not created'], 422);
-    }
-
-    $education = Education::find($education->id);
-
-    return response()->json(($education), 200);
-
-  }
-
-  public function updateEducation(Request $request) {
-    $validator = Validator::make($request->all(), [
-      'id' => 'required|integer|exists:educations,id',
-      'name' => 'required|string|between:2,100',
-      'finish_date' => 'nullable|date',
-      'finished' => 'nullable|boolean'
-    ]);
-
-    if($validator->fails()){
-        return response()->json($validator->errors()->toJson(), 400);
-    }
-
-    $education = Education::find($request->get('id'));
-    $user = auth()->user();
-
-    if($education->user_id != $user->id){
-      return response()->json(['message' => 'Unauthorized'],401);
-    }
-
-    // $user = User::find($education['user_id']);
-    // $author_rank = auth()->user()->userType->rank;
-    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-    //   return response()->json(['message' => 'Unauthorized'],401);
-    // }
-
-    if( $education) {
-      try {
-        $education->update([
-          'name'=> $request->get('name'),
-          'finish_date'=> $request->get('finish_date'),
-          'finished'=> $request->get('finished'),
+    public function createEducation(Request $request) 
+    {
+      
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|between:2,100',
+            'finish_date' => 'nullable|date',
+            'finished' => 'nullable|boolean'
         ]);
-      } catch(QueryException $e){
-        return response()->json(['message' => 'Education not updated'], 422);
-      }
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 400);
+        }
+
+        $validated_data = $validator->valid();
+
+        $education = Education::create(array_merge(
+            $validator->validated(),
+            ['user_id' => auth()->user()->id]
+        ));
+
+        $education = Education::find($education->id);
+
+        return response()->json($education, 200);
+
     }
-    else {
-      return response()->json(['message' => 'Education not updated'], 422);
 
-    } 
+    public function updateEducation(Request $request) 
+    {
+      
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer|exists:educations,id',
+            'name' => 'required|string|between:2,100',
+            'finish_date' => 'nullable|date',
+            'finished' => 'nullable|boolean'
+        ]);
 
-    return response()->json(($education), 200);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first()], 400);
+        }
 
-  }
+        $validated_data = $validator->valid();
 
-  // public function updateCourse(Request $request)
-  // {
+        $education = Education::find($validated_data['id']);
 
-  //   var_dump($request->all());
+        if(!$education) {
+            return response()->json(['message' => 'Education not found'], 422);
+        }
 
-  //   $validator = Validator::make($request->all(), [
-  //     'user_id' => 'required|integer|exists:users,id',
-  //     'course_id' => 'required|integer|exists:courses,id',
-  //     'number' => 'nullable|string|between:2,100',
-  //     'expedition_date' => 'nullable|date',
-  //     'valid_until' => 'nullable|date'
-  //   ]);
+        if($education->user_id != auth()->user()->id){
+            return response()->json(['message' => 'Unauthorized'],401);
+        }
 
-  //   var_dump($request->get('number'));
+        $education->update([
+            'name'=> $validated_data['name'],
+            'finish_date'=> $validated_data['finish_date'],
+            'finished'=> $validated_data['finished'],
+        ]);
 
-  //   if($validator->fails()){
-  //       return response()->json($validator->errors()->toJson(), 400);
-  //   }
+        return response()->json(($education), 200);
 
-  //   $user = User::find($request->get('user_id'));
-  //   $author_rank = auth()->user()->userType->rank;
-  //   if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-  //     return response()->json(['message' => 'Unauthorized'],401);
-  //   }
-
-  //   try {
-  //     $user->courses()->updateExistingPivot($request->get('course_id'),[
-  //       'number'=> $request->get('number'),
-  //       'expedition_date' => $request->get('expedition_date'),
-  //       'valid_until' => $request->get('valid_until'),
-  //       'updated_at' => Carbon::now()
-  //     ]);
-  //   } catch(QueryException $e){
-  //     return response()->json(['message' => 'Course not updated'], 422);
-  //   }
-
-  //   $updated_course = $user->courses()->find($request->get('course_id'));
-  //   $updated_course['number'] = $updated_course->pivot->number; 
-  //   $updated_course['expedition_date'] = $updated_course->pivot->expedition_date; 
-  //   $updated_course['valid_until'] = $updated_course->pivot->valid_until; 
-
-  //   return response()->json(($updated_course), 201);
-
-  // }
+    }
 
   public function deleteEducation($education_id)
   {
 
-    $params = [
-      'education_id' => $education_id
-    ];
+      $params = [
+          'education_id' => $education_id
+      ];
 
-    $validator = Validator::make($params, [
-      'education_id' => 'required|integer|exists:educations,id',
-    ]);
+      $validator = Validator::make($params, [
+          'education_id' => 'required|integer|exists:educations,id',
+      ]);
 
-    if($validator->fails()){
-      return response()->json($validator->errors()->toJson(), 400);
-    }
+      if ($validator->fails()) {
+          return response()->json(['error' => $validator->errors()->first()], 400);
+      }
 
-    $education = Education::find($education_id);
-    $user = auth()->user();
-    if($education->user_id != $user->id){
-      return response()->json(['message' => 'Unauthorized'],401);
-    }
-    // $user = User::find($education['user_id']);
-    // $author_rank = auth()->user()->userType->rank;
-    // if( $author_rank >= $user->userType->rank && $author_rank != 1) {
-    //   return response()->json(['message' => 'Unauthorized'],401);
-    // }
+      $validated_data = $validator->valid();
 
-    $education->delete();
-    return response()->json(null, 204);
+      $education = Education::find($validated_data['education_id']);
+      
+      if($education->user_id != auth()->user()->id){
+          return response()->json(['message' => 'Unauthorized'],401);
+      }
+
+      $education->delete();
+
+      return response()->json(null, 204);
+
   }
 
 }

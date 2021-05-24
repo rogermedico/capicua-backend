@@ -1,17 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
-use App\Models\User;
-use App\models\DrivingLicence;
-use App\Models\UserType;
-use App\Models\Education;
-use App\Models\Language;
-use App\Notifications\CustomNewUserNotification;
-use Illuminate\Database\QueryException;
 use Validator;
 
 class CourseController extends Controller
