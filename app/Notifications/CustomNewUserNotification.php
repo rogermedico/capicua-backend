@@ -54,7 +54,7 @@ class CustomNewUserNotification extends Notification
     protected function buildMailMessage($url)
     {
         return (new MailMessage)
-            ->subject(Lang::get('New user'))
+            ->subject(Lang::get('New User'))
             ->line('Se us ha afegit com a usuari de la intranet corporativa. Les dades per accedir al vostre compte són les següents:')
             ->line(new HtmlString('<ul><li>Usuari: '.$this->email.'</li><li>Contrasenya: '.$this->password.'</li></ul>'))
             ->line('Tot hi això, no se us permetrà l\'accés fins que confirmeu la vostra adreça electrònica. Per fer-ho, feu clic al botó inferior.')

@@ -1,12 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Contracts\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Carbon;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -16,10 +13,8 @@ use App\Models\UserType;
 use App\Models\Education;
 use App\Models\Language;
 use App\Notifications\CustomNewUserNotification;
-
 use Illuminate\Support\Facades\Validator;
 
-// use App\Mail\TestMail;
 
 class UserController extends Controller
 {
