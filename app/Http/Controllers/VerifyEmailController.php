@@ -11,53 +11,55 @@ use App\Models\User;
 class VerifyEmailController extends Controller
 {
 
-  public function sendVerifyEmail(Request $request){
-    if(!auth()->user()->email_verified_at){
-      auth()->user()->sendEmailVerificationNotification();
-      return response()->json(['message' => 'Verification email sent.']);
+    public function sendVerifyEmail(/*Request $request*/){
+      
+      if(!auth()->user()->email_verified_at){
+          auth()->user()->sendEmailVerificationNotification();
+          return response()->json(['message' => 'Verification email sent']);
+      }
+      else {
+          return response()->json(['message' => 'Verification email not sent'],400);
+      }
+      
     }
-    else {
-      return response()->json(['message' => 'Verification email not sent.'],400);
-    }
-
-    
-  }
 
   public function verifyEmail(Request $request){
 
-    $params = [
-      'id' => $request->route('id'),
-      'hash' => $request->route('hash')
-    ];
+      $params = [
+          'id' => $request->route('id'),
+          'hash' => $request->route('hash')
+      ];
 
-    $validator = Validator::make($params, [
-      'id' => 'required|integer|exists:users,id',
-      'hash' => 'required|string',
-    ]);
+      $validator = Validator::make($params, [
+          'id' => 'required|integer|exists:users,id',
+          'hash' => 'required|string',
+      ]);
 
-    if ($validator->fails()) {
-      return response()->json($validator->errors()->toJson(), 400);
-    }
+      if ($validator->fails()) {
+          return response()->json(['error' => $validator->errors()->first()], 400);
+      }
 
-    $user = User::find($params['id']);
+      $validated_data = $validator->valid();
 
-    if($user->deactivated){
-      return response()->json(['message' => 'Email not verified.'],400);
-    }
+      $user = User::find($validated_data['id']);
 
-    if (!hash_equals((string) $params['hash'], sha1($user->getEmailForVerification()))) {
-      return response()->json(['message' => 'Email not verified.'],400);
-    }
+      if($user->deactivated){
+          return response()->json(['message' => 'Email not verified'],400);
+      }
 
-    if ($user->hasVerifiedEmail()) return response()->json(['message' => 'Email already verified.'],400);
+      if (!hash_equals((string) $validated_data['hash'], sha1($user->getEmailForVerification()))) {
+          return response()->json(['message' => 'Email not verified'],400);
+      }
 
-    if ($user->markEmailAsVerified()){
-      event(new Verified($user));
-      return response()->json(['message' => 'Email successfully verified.']);
-    }
-    else{
-      return response()->json(['message' => 'Email not verified.'],400);
-    }
+      if ($user->hasVerifiedEmail()) return response()->json(['message' => 'Email already verified'],400);
+
+      if ($user->markEmailAsVerified()){
+        return response()->json(['message' => 'Email successfully verified']);
+      }
+      else{
+        return response()->json(['message' => 'Email not verified'],400);
+      }
+
   }
 
 }
