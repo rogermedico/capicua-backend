@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Verified; 
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 
@@ -11,7 +9,7 @@ use App\Models\User;
 class VerifyEmailController extends Controller
 {
 
-    public function sendVerifyEmail(/*Request $request*/){
+    public function sendVerifyEmail(){
       
       if(!auth()->user()->email_verified_at){
           auth()->user()->sendEmailVerificationNotification();
